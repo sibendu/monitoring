@@ -55,6 +55,7 @@ public class UtilityController {
 		processService.cleanAll();
 		taskService.cleanAll();
 		eventService.cleanAll();
+		processService.cleanAllProcessDef();
 		return "All records removed successfully";
 	}
 

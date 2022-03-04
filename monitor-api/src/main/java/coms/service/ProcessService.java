@@ -172,6 +172,10 @@ public class ProcessService {
 		repository.deleteAll();
 	}
 	
+	public void cleanAllProcessDef() {
+		processRepo.deleteAll();
+	}
+	
 	public ProcessInstance updateEndEventCompletedCount(ProcessInstance in,ComsProcessDef processDef) {
 		
 		ProcessInstance inst = repository.findById(in.getId()).get();//Latest record fetced
