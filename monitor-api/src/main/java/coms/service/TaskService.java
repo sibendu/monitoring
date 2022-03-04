@@ -17,8 +17,8 @@ import coms.model.ProcessActivityRepository;
 import coms.model.ProcessInstance;
 import coms.model.TaskActivity;
 import coms.model.TaskInstance;
-import coms.process.ComsProcess;
-import coms.process.ComsProcessContext;
+import coms.process.ComsProcessDef;
+import coms.process.ProcessContext;
 import coms.process.ComsVariable;
 import coms.process.ProcessSearchRequest;
 import coms.task.TaskAction;
@@ -155,9 +155,9 @@ public class TaskService {
         		// The process definition has next events are defined for this task. Trigger them all
             	for (int i = 0; i < nextEvents.length; i++) {
 					String nextEvent = nextEvents[i];    							
-					ComsProcessContext processCtx = new ComsProcessContext();
+					ProcessContext processCtx = new ProcessContext();
 					processCtx.setVariables(comVars);
-					ComsEvent ev = new ComsEvent(nextEvent, new Date(), instance.getProcessId(), processCtx);
+					ComsEvent ev = new ComsEvent(null, nextEvent, new Date(), instance.getProcessId(), processCtx);
 					
 					messageService.sendMessage(ev);
 				}

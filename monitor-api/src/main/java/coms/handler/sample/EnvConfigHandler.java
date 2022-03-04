@@ -9,7 +9,7 @@ import coms.handler.ComsEvent;
 import coms.handler.ComsResult;
 import coms.handler.IEventHandler;
 import coms.model.ProcessInstance;
-import coms.process.ComsProcessContext;
+import coms.process.ProcessContext;
 import coms.process.ComsVariable;
 import coms.service.ProcessService;
 

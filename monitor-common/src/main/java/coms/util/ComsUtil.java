@@ -18,4 +18,7 @@ public class ComsUtil {
 	public static String TASK_ACTION_CLAIM = "claim";
 	public static String TASK_ACTION_COMPLETE = "complete";
 	
+	public static String DECISION_AND = "AND";
+	public static String DECISION_OR = "OR";
+	
 }

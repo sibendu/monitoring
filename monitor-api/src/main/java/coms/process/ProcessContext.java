@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter @NoArgsConstructor
-public class ComsProcessContext implements Serializable{
+public class ProcessContext implements Serializable{
 
 	private List<ComsVariable> variables;
 
-	public ComsProcessContext(List<ComsVariable> variables) {
+	public ProcessContext(List<ComsVariable> variables) {
 		super();
 		if(variables != null) {
 			this.variables = variables;			

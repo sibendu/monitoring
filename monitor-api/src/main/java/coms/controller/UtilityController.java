@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import coms.model.ProcessInstance;
-import coms.process.ComsProcess;
-import coms.process.ComsProcessContext;
+import coms.process.ComsProcessDef;
+import coms.process.ProcessContext;
 import coms.process.ComsVariable;
 import coms.process.ProcessSearchRequest;
 import coms.model.ProcessActivity;
@@ -28,6 +28,7 @@ import coms.service.ProcessService;
 import coms.service.TaskService;
 import coms.task.TaskAction;
 import coms.util.ComsApiUtil;
+import coms.service.EventService;
 import coms.service.MessageService;
 
 
@@ -41,6 +42,9 @@ public class UtilityController {
 	@Autowired
 	TaskService taskService;
 	
+	@Autowired
+	EventService eventService;
+	
 	@GetMapping("/live")
 	public String index() {
 		return new Date() + "\n";
@@ -50,6 +54,7 @@ public class UtilityController {
 	public String clean() {
 		processService.cleanAll();
 		taskService.cleanAll();
+		eventService.cleanAll();
 		return "All records removed successfully";
 	}
 

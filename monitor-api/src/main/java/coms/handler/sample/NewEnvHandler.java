@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import coms.model.ProcessInstance;
-import coms.process.ComsProcessContext;
+import coms.process.ProcessContext;
 import coms.process.ComsVariable;
 import coms.handler.AbstractEventHandler;
 import coms.handler.ComsEvent;

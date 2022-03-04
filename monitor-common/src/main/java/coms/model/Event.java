@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,39 +14,39 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import coms.process.ComsProcessContext;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "process_instance")
+@Table(name = "event")
 @Getter @Setter @NoArgsConstructor
-public class ProcessInstance implements Serializable{
+public class Event implements Serializable{
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	private String code;
-	private String version;
+	private Date start;
+	private Date finish;
+	private Long processId;
+	
+	@Column(length=5000)
+	private String context;
+	
 	private String status;
-	private Date created;
-	private Date updated;
-	private int noEndEvents = 0;
+	private boolean nextEvents;
 	
-	@OneToMany(mappedBy = "processInstance", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
-    private Set<ProcessActivity> records = new HashSet<>();
-	
-	public ProcessInstance(Long id, String code, String version, String status, Date created, Date updated) {
+	public Event(Long id, String code, Date start, Date finish, Long processId, String context, String status,boolean nextEvents) {
 		super();
 		this.id = id;
 		this.code = code;
-		this.version =  version;
+		this.start = start;
+		this.finish = finish;
+		this.processId = processId;
+		this.context = context;
 		this.status = status;
-		this.created =created;
-		this.updated =updated;
-	}	
-	
-	public void addActivity(ProcessActivity act) {
-		this.records.add(act);
+		this.nextEvents = nextEvents;
 	}
 }

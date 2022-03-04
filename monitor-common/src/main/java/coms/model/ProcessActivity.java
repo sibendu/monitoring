@@ -39,7 +39,7 @@ public class ProcessActivity implements Serializable{
 	private String success;	
 	private String message;
 	
-	@Column(name = "variables", length = 2000)
+	@Column(name = "variables", length = 5000)
 	private String variables;
 	
 	

@@ -3,7 +3,7 @@ package coms.handler;
 import java.io.Serializable;
 import java.util.Date;
 
-import coms.process.ComsProcessContext;
+import coms.process.ProcessContext;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,13 +11,16 @@ import lombok.Setter;
 @Getter @Setter @NoArgsConstructor
 public class ComsEvent implements Serializable {
 
+	private Long id;
 	private String code;
 	private Date time;
 	private Long processId;
-	private ComsProcessContext context;
+	private String handler; 
+	private ProcessContext context;
 
-	public ComsEvent(String code, Date time, Long processId, ComsProcessContext context) {
+	public ComsEvent(Long id, String code, Date time, Long processId, ProcessContext context) {
 		super();
+		this.id = id;
 		this.code = code;
 		this.time=time;
 		this.processId = processId;
@@ -25,7 +28,7 @@ public class ComsEvent implements Serializable {
 		if(context != null) {
 			this.context = context;
 		}else {
-			this.context= new ComsProcessContext();
+			this.context= new ProcessContext();
 		}
 	}	
 }

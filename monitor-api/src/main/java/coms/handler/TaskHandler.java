@@ -8,17 +8,18 @@ import org.springframework.stereotype.Component;
 
 import coms.model.TaskInstance;
 import coms.model.TaskVariable;
-import coms.process.ComsProcessContext;
+import coms.process.ProcessContext;
 import coms.process.ComsVariable;
+import coms.process.EventDefinition;
 import coms.service.ProcessService;
 import coms.service.TaskService;
 
 @Component
-public class HumanTaskHandler extends AbstractEventHandler implements IEventHandler{
+public class TaskHandler extends AbstractEventHandler implements IEventHandler{
 	
 	private TaskService taskService;
 	
-    public HumanTaskHandler(ProcessService jobService, TaskService taskService) {
+    public TaskHandler(ProcessService jobService, TaskService taskService) {
 		super(jobService);
 		this.taskService = taskService;
 	}
@@ -27,7 +28,7 @@ public class HumanTaskHandler extends AbstractEventHandler implements IEventHand
     	return new ComsResult(false, "**FATAL ERROR: This should have never been called", e.getContext());
     }
     
-    public ComsResult process(ComsEvent e, Long processActivityId, HumanTaskHandlerDef humanTaskDef) {
+    public ComsResult process(ComsEvent e,EventDefinition eventDef,  Long processActivityId, TaskHandlerDef humanTaskDef) {
     	System.out.println("Human Task handler :: process-instance = "+e.getProcessId()+", event = "+e.getCode());
     	ComsResult result = null;
     	String message = null;
@@ -35,7 +36,7 @@ public class HumanTaskHandler extends AbstractEventHandler implements IEventHand
     		
     		TaskInstance task = new TaskInstance(humanTaskDef.getName(), null,humanTaskDef.getAssignedToGroup(),humanTaskDef.getAssignedToUser(), e.getProcessId(), processActivityId);
     		
-    		task.serializeSetNextEvents(humanTaskDef.getNextEvents());
+    		task.serializeSetNextEvents(eventDef.getNextEvents());
     		
     		//Add process context variables as task variables
     		List<ComsVariable> vars = e.getContext().getVariables();

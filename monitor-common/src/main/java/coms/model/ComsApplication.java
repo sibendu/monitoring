@@ -14,6 +14,9 @@ import org.springframework.context.annotation.Bean;
 public class ComsApplication {
 	
 	@Autowired 
+	EventRepository eventRepo;
+	
+	@Autowired 
 	ProcessInstanceRepository repo;
 	
 	@Autowired 
@@ -26,6 +29,19 @@ public class ComsApplication {
 	@Bean
 	public CommandLineRunner commandLineRunner() {
 		return args -> {
+			
+//			Long processId = new Long(1001);
+//			String code ="ABC";
+//			
+//			Event jpaNextEvent = new Event(null, code, new Date(), null, processId, null, null , false);
+//			jpaNextEvent = eventRepo.save(jpaNextEvent);
+//			
+//			System.out.println("Fired Next event: "+jpaNextEvent.getCode()+" -- "+jpaNextEvent.getId());
+//			
+//			List<Event> evs = eventRepo.find(code, processId);
+//			if(evs != null && evs.size() > 0) {
+//				System.out.println("Process id "+ processId +" event "+code + " is fired sucessfully");	
+//			}
 			
 			System.out.println("Let's inspect the beans provided by Spring Boot:");
 //			ProcessInstance job = new ProcessInstance(null,"A", "NEW",new Date(), null);	

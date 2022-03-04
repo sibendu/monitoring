@@ -1,7 +1,9 @@
 package coms.handler;
 
 import java.io.Serializable;
+import java.util.List;
 
+import coms.process.EventDefinition;
 import coms.util.ComsApiUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

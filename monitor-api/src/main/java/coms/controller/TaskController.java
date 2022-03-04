@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import coms.model.ProcessInstance;
-import coms.process.ComsProcess;
-import coms.process.ComsProcessContext;
+import coms.process.ComsProcessDef;
+import coms.process.ProcessContext;
 import coms.process.ComsVariable;
 import coms.process.ProcessSearchRequest;
 import coms.model.ProcessActivity;

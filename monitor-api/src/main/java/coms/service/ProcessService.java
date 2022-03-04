@@ -6,11 +6,16 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+
 import coms.model.ProcessInstance;
-import coms.process.ComsProcess;
-import coms.process.ComsProcessContext;
+import coms.process.ComsProcessDef;
+import coms.process.ProcessContext;
+import coms.process.EventDefinition;
 import coms.process.ProcessSearchRequest;
 import coms.util.ComsApiUtil;
 import coms.model.ProcessActivity;
@@ -18,14 +23,15 @@ import coms.ProcessDefinitionRepository;
 import coms.handler.AbstractEventHandler;
 import coms.handler.AbstractEventHandlerDef;
 import coms.handler.ComsEvent;
-import coms.handler.HumanTaskHandler;
-import coms.handler.HumanTaskHandlerDef;
+import coms.handler.TaskHandler;
+import coms.handler.TaskHandlerDef;
 import coms.handler.IEventHandler;
 import coms.handler.JavaHandlerDef;
 import coms.handler.ServiceHandlerDef;
 import coms.model.ProcessActivityRepository;
+import coms.model.ProcessDefinition;
 import coms.model.ProcessInstanceRepository;
-
+import coms.model.ProcessRepository;
 import io.kubemq.sdk.basic.ServerAddressNotSuppliedException;
 import io.kubemq.sdk.queue.Message;
 import io.kubemq.sdk.queue.Queue;
@@ -39,6 +45,9 @@ public class ProcessService {
 	MessageService messageService;
 	
 	@Autowired
+	public ProcessRepository processRepo;
+	
+	@Autowired
 	public ProcessInstanceRepository repository;
 	
 	@Autowired
@@ -47,14 +56,33 @@ public class ProcessService {
 	@Autowired
 	private Queue queue;
 	
-//	public JobService(Queue queue) {
-//        this.queue = queue;
-//    }
+	public ProcessDefinition create(ProcessDefinition p) {
+		return processRepo.save(p);
+	}
+	
+	public ProcessDefinition find(String code, String version) {
+		ProcessDefinition def = null;
+		List<ProcessDefinition> processes = processRepo.findByCodeAndVersion(code, version);
+		if(processes != null && processes.size() > 0) {
+			def = processes.get(0);
+		}
+		return def;
+	}
 	
 	public Iterable<ProcessInstance> getJobs() {
 		//System.out.println("JobService.getJobs()");
 		return repository.findAll();
 	}
+	
+	public Iterable<ProcessActivity> getActivities(Long pid) {
+		//System.out.println("JobService.getJobs()");
+		return recordRepository.findByProcessId(pid);
+	}
+	
+	public List<ProcessActivity> findByActivityByEvent(Long pid, String event) {
+		return recordRepository.findByActivityByEvent(pid, event);
+	}
+	
 	
 	public ProcessInstance getJob(Long id) {
 		//System.out.println("JobService.getJob(id)");
@@ -76,30 +104,31 @@ public class ProcessService {
 		return recordRepository.save(jobRecord);
 	}
 	
-	public ProcessInstance startProcess(String processCode, ComsProcessContext context) {
+	public ProcessInstance startProcess(String processCode,String version, ProcessContext context) {
 		//System.out.println("JobService.startProcess(event)");
 
 		//Create a new process instance record
 		Date dt = new Date();
-		ProcessInstance processInStance = new ProcessInstance(null, processCode, ComsApiUtil.PROCESS_STATUS_NEW, dt, dt);
+		ProcessInstance processInStance = new ProcessInstance(null, processCode, version, ComsApiUtil.PROCESS_STATUS_NEW, dt, dt);
 		processInStance = repository.save(processInStance);
 		
 		// Trigger first event to start processing
-		ComsProcess process = ProcessDefinitionRepository.getProcessDefinition(processCode);
-		String startEvent = process.getStartEvent();
-		ComsEvent event = new ComsEvent(startEvent, new Date(), processInStance.getId(), context);
+		ProcessDefinition procedsDef = find(processCode, version);		
+		ComsProcessDef process = new Gson().fromJson(procedsDef.getDefinition(), ComsProcessDef.class);  //ProcessDefinitionRepository.getProcessDefinition(processCode);
+		EventDefinition startEvent = process.getStartEvent();
+		ComsEvent event = new ComsEvent(null, startEvent.getCode(), new Date(), processInStance.getId(), context);
         
 		messageService.sendMessage(event);
 				
 		return processInStance;
 	}
 	 
-	public ProcessActivity markActivityStart(ProcessInstance pi, ComsEvent event, AbstractEventHandlerDef handlerDef, ComsProcess processDef) {// String eventCode, String handler, String description, String variables) {
+	public ProcessActivity markActivityStart(ProcessInstance pi, ComsEvent event, AbstractEventHandlerDef handlerDef, ComsProcessDef processDef) {// String eventCode, String handler, String description, String variables) {
 
 		//Create a new activity record for current process instance
 		
 		String handler = null;
-		if(handlerDef instanceof HumanTaskHandlerDef) {
+		if(handlerDef instanceof TaskHandlerDef) {
 			handler = ComsApiUtil.HANDLER_TYPE_HUMATASK;
     	}else if(handlerDef instanceof JavaHandlerDef) {
     		handler = ((JavaHandlerDef)handlerDef).getHandlerClass();    		
@@ -112,7 +141,7 @@ public class ProcessService {
 		
 		ProcessActivity activity = recordRepository.save(act);
 		
-		if(processDef.getStartEvent().equalsIgnoreCase(event.getCode())) {
+		if(processDef.getStartEvent().getCode().equalsIgnoreCase(event.getCode())) {
 			//This is first event. Mark instance status as WIP
 			pi.setStatus(ComsApiUtil.PROCESS_STATUS_WIP);
 			pi = repository.save(pi);
@@ -123,8 +152,7 @@ public class ProcessService {
 		return activity;
 	}
 	
-	public ProcessActivity markActivityEnd(ProcessActivity rec) {
-		rec.setFinish(new Date());
+	public ProcessActivity updateActivity(ProcessActivity rec) {		
 		ProcessActivity rec1 = recordRepository.save(rec);
 		return rec1;
 	}
@@ -144,7 +172,7 @@ public class ProcessService {
 		repository.deleteAll();
 	}
 	
-	public ProcessInstance updateEndEventCompletedCount(ProcessInstance in,ComsProcess processDef) {
+	public ProcessInstance updateEndEventCompletedCount(ProcessInstance in,ComsProcessDef processDef) {
 		
 		ProcessInstance inst = repository.findById(in.getId()).get();//Latest record fetced
 		

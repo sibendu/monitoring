@@ -1,6 +1,7 @@
 package coms.controller;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,50 @@ import coms.service.*;
 @RestController
 @RequestMapping("/sample")
 public class SampleController {
+	
+	@PostMapping("/loan")
+	public ResponseEntity<ComsResult> processLOan(@RequestBody ComsEvent e) {
+				
+		String message = "Loan Process Id "+e.getProcessId()+", Event "+e.getCode()+" processed by handler "+ e.getHandler();
+		System.out.println(message);
+				
+		try {
+			Thread.sleep(10);
+//			if(e.getCode().equals("EMPLOYMENT_CHECK")) {
+//				System.out.println("Delaying EMPLOYMENT_CHECK");
+//				Thread.sleep(10000);
+//			}else {
+//				Thread.sleep(500);
+//			}
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ComsResult result = new ComsResult(true, message, e.getContext());
+		
+		return new ResponseEntity(result, HttpStatus.OK);
+	}
+	
+	
+	@PostMapping("/allcheckscomplete")
+	public ResponseEntity<ComsResult> processLoanAllChecks(@RequestBody ComsEvent e) {
+		
+		String handlerName = null;
+		List<ComsVariable> vars = e.getContext().getVariables();
+		for (ComsVariable var : vars) {
+			if(var.getName().equals("SERVICE_HANDLER")) {
+				handlerName = var.getValue();
+			}
+		} 
+				
+		String message = "Loan Process Id "+e.getProcessId()+", Event "+e.getCode()+" processed by handler "+ handlerName;
+		System.out.println(message);
+				
+		ComsResult result = new ComsResult(true, message, e.getContext());
+		
+		return new ResponseEntity(result, HttpStatus.OK);
+	}
+	
 	
 	@PostMapping("/env/create")
 	public ResponseEntity<ComsResult> createEnv(@RequestBody ComsEvent e) {
@@ -49,6 +94,25 @@ public class SampleController {
 		System.out.println(message);
 		
 		e.getContext().addVariable(new ComsVariable("VAR-ConfigEnv","Val-ConfigEnvService"));
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ComsResult result = new ComsResult(true, message, e.getContext());
+		
+		return new ResponseEntity(result, HttpStatus.OK);
+	}
+	
+	@PostMapping("/env/notify")
+	public ResponseEntity<ComsResult> notify(@RequestBody ComsEvent e) {
+		
+		String message = "Notifying customer. Process-id= "+e.getProcessId();
+		System.out.println(message);
+		
+		e.getContext().addVariable(new ComsVariable("VAR-Notify","Val-NotifyService"));
 		
 		try {
 			Thread.sleep(2000);
