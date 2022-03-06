@@ -113,8 +113,8 @@ public class ProcessService {
 		processInStance = repository.save(processInStance);
 		
 		// Trigger first event to start processing
-		ProcessDefinition procedsDef = find(processCode, version);		
-		ComsProcessDef process = new Gson().fromJson(procedsDef.getDefinition(), ComsProcessDef.class);  //ProcessDefinitionRepository.getProcessDefinition(processCode);
+		ProcessDefinition processDef = find(processCode, version);		
+		ComsProcessDef process = new Gson().fromJson(processDef.getDefinition(), ComsProcessDef.class);  //ProcessDefinitionRepository.getProcessDefinition(processCode);
 		EventDefinition startEvent = process.getStartEvent();
 		ComsEvent event = new ComsEvent(null, startEvent.getCode(), new Date(), processInStance.getId(), context);
         

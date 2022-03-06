@@ -2,6 +2,9 @@ package coms.util;
 
 public class ComsApiUtil {
 	
+	public static String EVENT_STATUS_SUCCESS = "Y";
+	public static String EVENT_STATUS_FAIL = "N";
+	
 	public static String PROCESS_STATUS_NEW = "NEW";
 	public static String PROCESS_STATUS_WIP = "WIP";
 	public static String PROCESS_STATUS_COMPLETE = "COMPLETED";

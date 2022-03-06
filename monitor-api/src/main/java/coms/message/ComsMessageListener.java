@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import com.google.gson.Gson;
+
 import coms.ProcessDefinitionRepository;
 import coms.handler.AbstractEventHandlerDef;
 import coms.handler.ComsEvent;
@@ -26,6 +28,7 @@ import coms.handler.ServiceHandlerDef;
 import coms.handler.sample.NewEnvHandler;
 import coms.model.Event;
 import coms.model.ProcessActivity;
+import coms.model.ProcessDefinition;
 import coms.model.ProcessInstance;
 import coms.process.EventHandler;
 import coms.process.ProcessContext;
@@ -133,7 +136,12 @@ public class ComsMessageListener {
         	
         	ProcessInstance pi = jobService.getJob(event.getProcessId());        	
         	Long processId = pi.getId();
+        	
         	ComsProcessDef processDef = ProcessDefinitionRepository.getProcessDefinition(pi.getCode());
+        	
+        	//ProcessDefinition pDef = jobService.find(pi.getCode(), pi.getVersion());		
+    		//ComsProcessDef processDef = new Gson().fromJson(pDef.getDefinition(), ComsProcessDef.class);  //ProcessDefinitionRepository.getProcessDefinition(processCode);
+    		
         	EventDefinition eventDef = processDef.getEventByCode(event.getCode());
         	List<AbstractEventHandlerDef> handlers = eventDef.getHandlers();
 
@@ -183,8 +191,7 @@ public class ComsMessageListener {
 				}
             	
         		// All handlers have successfully processed without error, fire events for next steps of process
-				//For Human tasks, not applicable
-            	if(allHandlersSuccessful && !isTaskNode) {
+            	if(allHandlersSuccessful) {
             		
             		if(event.getCode().equals("REVIEW_RESULTS")) {
             			System.out.println("Here");
@@ -192,47 +199,58 @@ public class ComsMessageListener {
             		
             		String[] nextEvents = processDef.getEventByCode(event.getCode()).getNextEvents();
             		
-            		if(nextEvents != null && nextEvents.length > 0) {
-                	
-            			// Generally nextEvents to be fired. But for Decision Node, nextEvents should be fired only ONCE
-            			boolean fireNextEvents = true;
+            		if(!isTaskNode) {
+            			//For Human tasks, next events need not be fired. They will be fired when task is completed
             			
-            			if(isDecisionNode) {
-                			//Check if nextEvent for the Decision Node was/were already fired	
-            				for (int i = 0; i < nextEvents.length; i++) {            					
-            					List<Event> evs = eventService.find(nextEvents[i], processId);
-            					if(evs != null && evs.size() > 0) {
-            						System.out.println("Process id "+ processId +" event "+nextEvents[i] + " need not be fired again");		                    					
-            						fireNextEvents = false;
-            						break;
-            					}
-							}
-            			}
-            			
-            			if(fireNextEvents) {
-                			//Triggering all next events
-                        	for (int k =0; k < nextEvents.length; k++) {                        		
-                        		fireEvent(nextEvents[k], processId, (event.getContext() == null?null:event.getContext()));                        		                        		
-    						}
-            			}
-            		}else {
-            			//current event does not have any next event defined
-            			// check if it is one of the end event, and if yes, if process instance has reached completion             			
-            			if(processDef.isEndEvent(event.getCode())) {
-							//It is (one of the) end events, update count of end Events completed for this process instance 
-            				pi = jobService.updateEndEventCompletedCount(pi, processDef);	                    					                    				                    			
-            			}
-            		}	
+            			if(nextEvents != null && nextEvents.length > 0) {
+                    	
+                			// Generally nextEvents to be fired. But for Decision Node, nextEvents should be fired only ONCE
+                			boolean fireNextEvents = true;
+                			
+                			if(isDecisionNode) {
+                    			//Check if nextEvent for the Decision Node was/were already fired	
+                				for (int i = 0; i < nextEvents.length; i++) {            					
+                					List<Event> evs = eventService.find(nextEvents[i], processId);
+                					if(evs != null && evs.size() > 0) {
+                						System.out.println("Process id "+ processId +" event "+nextEvents[i] + " need not be fired again");		                    					
+                						fireNextEvents = false;
+                						break;
+                					}
+    							}
+                			}
+                			
+                			if(fireNextEvents) {
+                    			//Triggering all next events
+                            	for (int k =0; k < nextEvents.length; k++) {                        		
+                            		fireEvent(nextEvents[k], processId, (event.getContext() == null?null:event.getContext()));                        		                        		
+        						}
+                            	
+                            	jpaEvent.setNextEvents(true);
+                			}else {
+                				jpaEvent.setNextEvents(false);
+                			}
+                		}else {
+                			//current event does not have any next event defined
+                			// check if it is one of the end event, and if yes, if process instance has reached completion             			
+                			if(processDef.isEndEvent(event.getCode())) {
+    							//It is (one of the) end events, update count of end Events completed for this process instance 
+                				pi = jobService.updateEndEventCompletedCount(pi, processDef);	                    					                    				                    			
+                			}
+                			
+                			jpaEvent.setNextEvents(false);
+                		}	
+            		}
+            		
             		
                 	 //Event is processed. Update database
-            		 jpaEvent.setStatus("Y");
-               		 jpaEvent.setNextEvents(true);
+            		 jpaEvent.setStatus(ComsApiUtil.EVENT_STATUS_SUCCESS);
+               		 
            		 
             	} else {
             		//This case needs more thought. What to do in case one (or more) handler resulted in erroneous result 
             		//Event processed but at least some handler errored. Update database
-            		 jpaEvent.setStatus("N");
-               		 jpaEvent.setNextEvents(true);
+            		 jpaEvent.setStatus(ComsApiUtil.EVENT_STATUS_FAIL);
+               		 jpaEvent.setNextEvents(false);
             		 System.out.println("Error in processing event: "+event.getCode()+" , Process-Instance = "+event.getProcessId());                   		
             	}
             	

@@ -10,10 +10,13 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+
 import coms.handler.ComsEvent;
 import coms.handler.JavaHandlerDef;
 import coms.model.ProcessActivity;
 import coms.model.ProcessActivityRepository;
+import coms.model.ProcessDefinition;
 import coms.model.ProcessInstance;
 import coms.model.TaskActivity;
 import coms.model.TaskInstance;
@@ -34,6 +37,9 @@ import io.kubemq.sdk.tools.Converter;
 
 @Component
 public class TaskService {
+	
+	@Autowired
+	ProcessService processService;
 	
 	@Autowired
 	MessageService messageService;
@@ -132,20 +138,28 @@ public class TaskService {
 			instance = taskRepository.save(instance);
 			
 			if(instance.getProcessId() != null && instance.getActivityId() != null) {
-				
+				//This task is created from a process. 
+				//Let us proceed with process activities	
 				ProcessActivity act = processActivityRepo.findById(instance.getActivityId().longValue());
 				act.setFinish(new Date());
 				
-				ProcessActivity updatedAct = processActivityRepo.save(act);						
+				ProcessActivity updatedAct = processActivityRepo.save(act);	
+				
+				ProcessInstance pi = processService.getJob(instance.getProcessId());        
+    			ProcessDefinition pDef = processService.find(pi.getCode(), pi.getVersion());		
+        		ComsProcessDef processDef = new Gson().fromJson(pDef.getDefinition(), ComsProcessDef.class);  //ProcessDefinitionRepository.getProcessDefinition(processCode);
+        		
+        		if(processDef.isEndEvent(act.getEvent())) {
+        			//It is (one of the) end events, update count of end Events completed for this process instance 
+        			pi = processService.updateEndEventCompletedCount(pi, processDef);
+        		}
 			}
 			
 			
 			//Task completed, check if there are any events to trigger
 			String[] nextEvents = instance.getDeserializeNextEvents();
     		if(instance.getProcessId() != null && nextEvents != null && nextEvents.length > 0) {
-    			
-    			System.out.println("Task "+instance.getName()+" complete; resuming process-id "+instance.getProcessId());
-    			
+    			    			
     			Set<TaskVariable> vars = instance.getVariables();
     			List<ComsVariable> comVars = new ArrayList<>();
     			for (TaskVariable tv : vars) {
@@ -161,8 +175,9 @@ public class TaskService {
 					
 					messageService.sendMessage(ev);
 				}
-    		}
-    		
+            	
+            	System.out.println("Task "+instance.getName()+" complete; fired next events to resume process-id "+instance.getProcessId());    			
+    		}    		
 		}		
 		return instance;
 	}
