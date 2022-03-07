@@ -12,6 +12,7 @@ import lombok.Setter;
 @Getter @Setter @NoArgsConstructor
 public class ServiceHandlerDef extends AbstractEventHandlerDef {
 
+	private String type;
 	private String service;
 	
 	public ServiceHandlerDef(String name, String service, String[] nextEvents) {

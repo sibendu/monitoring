@@ -5,8 +5,10 @@ import java.util.HashMap;
 import org.springframework.boot.SpringApplication;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import coms.handler.AbstractEventHandlerDef;
+import coms.handler.AbstractEventHandlerDefAdapter;
 import coms.handler.DecisionHandlerDef;
 import coms.handler.TaskHandler;
 import coms.handler.TaskHandlerDef;
@@ -34,11 +36,21 @@ public class ProcessDefinitionRepository {
 	
 	
 	public static void main(String[] args) {
-		ComsProcessDef demo = DEMO_PROCESS();
-		System.out.println(new Gson().toJson(demo));  
+		//ComsProcessDef demo = DEMO_PROCESS();
+		//System.out.println(new Gson().toJson(demo));  
 		
-		demo = LOAN_PROCESS();
-		System.out.println(new Gson().toJson(demo));  
+		ComsProcessDef demo = LOAN_PROCESS();
+		
+		GsonBuilder builder = new GsonBuilder(); 
+		builder.registerTypeAdapter(AbstractEventHandlerDef.class, new AbstractEventHandlerDefAdapter());
+		builder.setPrettyPrinting();
+		Gson gson = builder.create();  
+	      
+		String json = gson.toJson(demo);
+		System.out.println(json);  
+		
+		ComsProcessDef procDef = gson.fromJson(json, ComsProcessDef.class); 
+	    System.out.println(procDef);  
 	}
 	
 	public static ComsProcessDef DEMO_PROCESS() {
