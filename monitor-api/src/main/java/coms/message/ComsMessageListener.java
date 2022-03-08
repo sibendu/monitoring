@@ -14,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 
-import coms.ProcessDefinitionRepository;
 import coms.handler.AbstractEventHandlerDef;
 import coms.handler.ComsEvent;
 import coms.handler.ComsResult;
@@ -32,6 +31,7 @@ import coms.model.ProcessDefinition;
 import coms.model.ProcessInstance;
 import coms.process.EventHandler;
 import coms.process.ProcessContext;
+import coms.process.proxy.ComsProcessDefProxy;
 import coms.process.ComsProcessDef;
 import coms.process.ComsVariable;
 import coms.process.EventDefinition;
@@ -137,10 +137,12 @@ public class ComsMessageListener {
         	ProcessInstance pi = jobService.getJob(event.getProcessId());        	
         	Long processId = pi.getId();
         	
-        	ComsProcessDef processDef = ProcessDefinitionRepository.getProcessDefinition(pi.getCode());
+        	ProcessDefinition pDef = jobService.find(pi.getCode(), pi.getVersion());	
         	
-        	//ProcessDefinition pDef = jobService.find(pi.getCode(), pi.getVersion());		
-    		//ComsProcessDef processDef = new Gson().fromJson(pDef.getDefinition(), ComsProcessDef.class);  //ProcessDefinitionRepository.getProcessDefinition(processCode);
+        	ComsProcessDefProxy proxyDef = new Gson().fromJson(pDef.getDefinition(), ComsProcessDefProxy.class); 
+        	
+        	ComsProcessDef processDef = ComsApiUtil.convert(proxyDef);
+    		System.out.println(processDef);
     		
         	EventDefinition eventDef = processDef.getEventByCode(event.getCode());
         	List<AbstractEventHandlerDef> handlers = eventDef.getHandlers();
@@ -175,7 +177,7 @@ public class ComsMessageListener {
 					
 					//Fire next set of events for this handler, if defined
 					//Only Service handlers will have next events. For Human tasks and Decision event, not applicable
-					if(thisHandlerDef.getType() == ComsApiUtil.HANDLER_TYPE_SERVICE) {
+					if(thisHandlerDef.getType().equals(ComsApiUtil.HANDLER_TYPE_SERVICE)) {
                 		String[] nextEventsHandler = thisHandlerDef.getNextEvents();
                 		if(nextEventsHandler != null && nextEventsHandler.length > 0) {                    			                    	
                         	for (int k = 0; k < nextEventsHandler.length; k++) {
@@ -184,10 +186,12 @@ public class ComsMessageListener {
                 		}
 					}
 					
-					//Mark activity completed. 	
-					markActivityCompletion(activity, 
+					//Mark activity completed. For Human Task not needed 	
+					if(!thisHandlerDef.getType().equals(ComsApiUtil.HANDLER_TYPE_HUMATASK)) {
+						markActivityCompletion(activity, 
 							(allHandlersSuccessful? "Y": "N"), result.getResult(), 
 							(event.getContext() == null? null: event.getContext().serializeToString()));
+					}
 				}
             	
         		// All handlers have successfully processed without error, fire events for next steps of process

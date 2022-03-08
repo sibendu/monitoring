@@ -18,7 +18,6 @@ import coms.process.ProcessContext;
 import coms.process.ProcessSearchRequest;
 import coms.model.ProcessActivity;
 import coms.model.ProcessDefinition;
-import coms.ProcessDefinitionRepository;
 import coms.handler.ComsEvent;
 import coms.model.ProcessInstanceRepository;
 import coms.service.ProcessService;

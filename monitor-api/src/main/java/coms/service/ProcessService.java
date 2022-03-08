@@ -19,7 +19,6 @@ import coms.process.EventDefinition;
 import coms.process.ProcessSearchRequest;
 import coms.util.ComsApiUtil;
 import coms.model.ProcessActivity;
-import coms.ProcessDefinitionRepository;
 import coms.handler.AbstractEventHandler;
 import coms.handler.AbstractEventHandlerDef;
 import coms.handler.ComsEvent;
