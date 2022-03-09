@@ -19,9 +19,9 @@ import coms.process.ProcessSearchRequest;
 import coms.model.ProcessActivity;
 import coms.model.ProcessDefinition;
 import coms.handler.ComsEvent;
+import coms.message.MessageService;
 import coms.model.ProcessInstanceRepository;
 import coms.service.ProcessService;
-import coms.service.MessageService;
 
 
 @RestController
@@ -29,44 +29,50 @@ import coms.service.MessageService;
 public class ProcessController {
 	
 	@Autowired
-	ProcessService jobService;
+	ProcessService processService;
 	
 	@GetMapping("/{processCode}/{version}")
 	public ProcessDefinition getProcessDef(@PathVariable String processCode, @PathVariable String version) {
 		System.out.println("ProcessController.getProcessDef()");
-		return jobService.find(processCode, version);
+		return processService.find(processCode, version);
 	}
 	
 	@PostMapping("/{processCode}/{version}")
 	public ProcessDefinition createProcessDef(@PathVariable String processCode, @PathVariable String version, @RequestBody String def) {
 		System.out.println("ProcessController.createPrcessDef()");
 		ProcessDefinition p = new ProcessDefinition(processCode, version, "", def, "DRAFT");	
-		return jobService.create(p);
+		return processService.create(p);
 	}
 	
 	@GetMapping("/instance")
 	public Iterable<ProcessInstance> findJobs() {
-		return jobService.getJobs();
+		return processService.getJobs();
 	}
 	
 	@GetMapping("/instance/{id}")
 	public ProcessInstance findJob(@PathVariable Long id) {
-		return jobService.getJob(id);
+		return processService.getJob(id);
 	}
 	
 	@PostMapping("/search")
 	public List<ProcessInstance> findByCodeAndStatus(@RequestBody ProcessSearchRequest request) {
 		System.out.println("ProcessController.findByCodeAndStatus()");
-		return jobService.findByCodeAndStatus(request);
+		return processService.findByCodeAndStatus(request);
 	}
 	
 	@PostMapping("/start/{processCode}/{version}")
 	public String startEnv(@PathVariable String processCode,@PathVariable String version, @RequestBody ProcessContext context) {
 		//System.out.println("JobController.createNewEnv()");
-		ProcessInstance processInStance = jobService.startProcess( processCode, version, context);		
+		ProcessInstance processInStance = processService.startProcess( processCode, version, context);		
 		System.out.println("Process instantiated: "+processCode+", Instance-Id = "+processInStance.getId());
 				
 		return "Request accepted: Job Id = "+processInStance.getId();
 		
+	}
+	
+	@GetMapping("/removedefinitions")
+	public String clean() {
+		processService.cleanAllProcessDef();
+		return "All process definitions removed successfully";
 	}
 }

@@ -27,16 +27,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	
 	implementation 'com.google.code.gson:gson:2.8.6'
-	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-	//implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
-	
 	
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.4'
 	
 	//runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'org.postgresql:postgresql'
 	
-	implementation 'io.kubemq.sdk:kubemq-sdk-Java:1.0.3'
+	implementation 'org.springframework.boot:spring-boot-starter-activemq'
 	
 	compileOnly 'org.projectlombok:lombok:1.18.22'
 	annotationProcessor 'org.projectlombok:lombok:1.18.22'

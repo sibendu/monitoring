@@ -20,6 +20,7 @@ import coms.process.ComsVariable;
 import coms.process.ProcessSearchRequest;
 import coms.model.ProcessActivity;
 import coms.handler.ComsEvent;
+import coms.message.MessageService;
 import coms.model.ProcessInstanceRepository;
 import coms.model.TaskInstance;
 import coms.model.TaskVariable;
@@ -28,7 +29,6 @@ import coms.service.TaskService;
 import coms.task.TaskAction;
 import coms.util.ComsApiUtil;
 import coms.service.EventService;
-import coms.service.MessageService;
 
 
 @RestController
@@ -54,7 +54,6 @@ public class UtilityController {
 		processService.cleanAll();
 		taskService.cleanAll();
 		eventService.cleanAll();
-		processService.cleanAllProcessDef();
 		return "All records removed successfully";
 	}
 

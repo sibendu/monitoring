@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 
 import coms.handler.ComsEvent;
 import coms.handler.JavaHandlerDef;
+import coms.message.MessageService;
 import coms.model.ProcessActivity;
 import coms.model.ProcessActivityRepository;
 import coms.model.ProcessDefinition;
@@ -29,11 +30,6 @@ import coms.util.ComsApiUtil;
 
 import coms.model.TaskInstanceRepository;
 import coms.model.TaskVariable;
-import io.kubemq.sdk.basic.ServerAddressNotSuppliedException;
-import io.kubemq.sdk.queue.Message;
-import io.kubemq.sdk.queue.Queue;
-import io.kubemq.sdk.queue.SendMessageResult;
-import io.kubemq.sdk.tools.Converter;
 
 @Component
 public class TaskService {

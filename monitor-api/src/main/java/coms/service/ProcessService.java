@@ -24,6 +24,7 @@ import coms.handler.AbstractEventHandlerDef;
 import coms.handler.ComsEvent;
 import coms.handler.TaskHandler;
 import coms.handler.TaskHandlerDef;
+import coms.message.MessageService;
 import coms.handler.IEventHandler;
 import coms.handler.JavaHandlerDef;
 import coms.handler.ServiceHandlerDef;
@@ -31,11 +32,6 @@ import coms.model.ProcessActivityRepository;
 import coms.model.ProcessDefinition;
 import coms.model.ProcessInstanceRepository;
 import coms.model.ProcessRepository;
-import io.kubemq.sdk.basic.ServerAddressNotSuppliedException;
-import io.kubemq.sdk.queue.Message;
-import io.kubemq.sdk.queue.Queue;
-import io.kubemq.sdk.queue.SendMessageResult;
-import io.kubemq.sdk.tools.Converter;
 
 @Component
 public class ProcessService {
@@ -51,9 +47,6 @@ public class ProcessService {
 	
 	@Autowired
 	public ProcessActivityRepository recordRepository;
-	
-	@Autowired
-	private Queue queue;
 	
 	public ProcessDefinition create(ProcessDefinition p) {
 		return processRepo.save(p);

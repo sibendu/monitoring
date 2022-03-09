@@ -30,12 +30,6 @@ import coms.handler.ServiceHandlerDef;
 import coms.model.ProcessActivityRepository;
 import coms.model.ProcessInstanceRepository;
 
-import io.kubemq.sdk.basic.ServerAddressNotSuppliedException;
-import io.kubemq.sdk.queue.Message;
-import io.kubemq.sdk.queue.Queue;
-import io.kubemq.sdk.queue.SendMessageResult;
-import io.kubemq.sdk.tools.Converter;
-
 @Component
 public class EventService {
 	

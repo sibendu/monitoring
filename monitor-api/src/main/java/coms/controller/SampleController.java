@@ -2,6 +2,7 @@ package coms.controller;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,20 +29,17 @@ public class SampleController {
 	public ResponseEntity<ComsResult> processLOan(@RequestBody ComsEvent e) {
 				
 		String message = "Loan Process Id "+e.getProcessId()+", Event "+e.getCode()+" processed by handler "+ e.getHandler();
-		System.out.println(message);
 				
 		try {
-			Thread.sleep(10);
-//			if(e.getCode().equals("EMPLOYMENT_CHECK")) {
-//				System.out.println("Delaying EMPLOYMENT_CHECK");
-//				Thread.sleep(10000);
-//			}else {
-//				Thread.sleep(500);
-//			}
+			int random = new Random().nextInt(5000 - 500) + 500;    	
+			Thread.sleep(random);
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		
+		System.out.println(message);
+		
 		ComsResult result = new ComsResult(true, message, e.getContext());
 		
 		return new ResponseEntity(result, HttpStatus.OK);
