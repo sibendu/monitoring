@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: activemq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: activemq
+  template:
+    metadata:
+      labels:
+        app: activemq
+    spec:
+      containers:
+      - env:
+        - name: AMQ_USER
+          value: admin
+        - name: AMQ_PASSWORD
+          value: admin
+        image: sibendu/activemq
+        imagePullPolicy: Always
+        name: activemq
+        ports:
+        - containerPort: 8161
+          name: admin
+          protocol: TCP
+        - containerPort: 8778
+          name: jolokia
+          protocol: TCP
+        - containerPort: 5672
+          name: amqp
+          protocol: TCP
+        - containerPort: 1883
+          name: mqtt
+          protocol: TCP
+        - containerPort: 61613
+          name: stomp
+          protocol: TCP
+        - containerPort: 61616
+          name: tcp
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: activemq
+  labels:
+    app: activemq
+spec:
+  type: NodePort
+  ports:
+    - port: 61616
+      targetPort: 61616
+      nodePort: 30616
+      name: tcp
+    - port: 8161
+      targetPort: 8161
+      nodePort: 30161
+      name: admin
+  selector:
+    app: activemq
