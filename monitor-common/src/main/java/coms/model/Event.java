@@ -14,7 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import coms.process.ComsProcessContext;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
