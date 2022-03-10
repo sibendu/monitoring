@@ -93,7 +93,7 @@ public class MessageListener {
 			ComsProcessDefProxy proxyDef = new Gson().fromJson(pDef.getDefinition(), ComsProcessDefProxy.class);
 
 			ComsProcessDef processDef = ComsApiUtil.convert(proxyDef);
-			System.out.println(processDef);
+			//System.out.println(processDef);
 
 			EventDefinition eventDef = processDef.getEventByCode(event.getCode());
 			List<AbstractEventHandlerDef> handlers = eventDef.getHandlers();
@@ -176,6 +176,8 @@ public class MessageListener {
 												+ " need not be fired again");
 										fireNextEvents = false;
 										break;
+									}else {
+										System.out.println("Next event "+nextEvents[i]+" not fired yet");
 									}
 								}
 							}
@@ -183,8 +185,7 @@ public class MessageListener {
 							if (fireNextEvents) {
 								// Triggering all next events
 								for (int k = 0; k < nextEvents.length; k++) {
-									fireEvent(nextEvents[k], processId,
-											(event.getContext() == null ? null : event.getContext()));
+									fireEvent(nextEvents[k], processId,event.getContext());
 								}
 
 								jpaEvent.setNextEvents(true);
