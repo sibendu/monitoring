@@ -1,0 +1,27 @@
+
+1. Run monitor-api project
+2. SWagger Url - http://localhost:8080/swagger-ui/index.html
+3. Grafana : http://localhost:32000/
+
+4. Remove all data : GET /util/cleanall
+   Remove proces deinitions: GEt /process/removedefinitions
+ 
+5. Define Loan process - POST /process/{processcode}/{version} - This is only data you need
+
+6. Initiate a process - POST /process/start/{processcode}/{version}
+The process runs till REVIEW_RESULTS steps. The it waits on human task.
+
+7. To close the task  - PUT /task/{id}/{action}
+id - Get from Grafana
+action = COMPLETE
+In the payload, "user":"sibendu"
+
+
+
+
+
+
+
+
+
+
