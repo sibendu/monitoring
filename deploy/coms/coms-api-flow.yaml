@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coms-api-flow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: coms-api-flow
+  template:
+    metadata:
+      labels:
+        app: coms-api-flow
+    spec:
+      containers:
+        - name: coms-api-flow
+          image: sibendu/coms-api-flow
+          ports:
+            - containerPort: 8080
+          env:
+            - name: spring.profiles.active
+              value: dev
+          imagePullPolicy: Always
+      imagePullSecrets:
+          - name: gitlabregcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: coms-api-flow
+spec:
+  type: NodePort
+  selector:
+    app: coms-api-flow
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 31080     
