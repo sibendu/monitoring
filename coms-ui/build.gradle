@@ -7,7 +7,7 @@ plugins {
 
 group = 'coms.ui'
 version = '1.0'
-sourceCompatibility = '8'
+sourceCompatibility = '11'
 
 repositories {
 	mavenCentral()

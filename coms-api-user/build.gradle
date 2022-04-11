@@ -7,7 +7,7 @@ plugins {
 
 group = 'coms.api.user'
 version = '1.0'
-sourceCompatibility = '1.8'
+sourceCompatibility = '11'
 
 jar {
 	baseName = 'coms.api.user'
