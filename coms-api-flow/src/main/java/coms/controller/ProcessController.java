@@ -56,7 +56,7 @@ public class ProcessController {
 	}
 	
 	@PostMapping("/def/{processCode}/{version}")
-	@Operation(summary="Create a new process definition")
+	@Operation(summary="Create a new process definition object")
 	public ProcessDefinition createProcessDef(@PathVariable String processCode, @PathVariable String version, @RequestBody String def) {
 		System.out.println("ProcessController.createPrcessDef()");
 		ProcessDefinition p = new ProcessDefinition(processCode, version, "", def, "DRAFT");	
