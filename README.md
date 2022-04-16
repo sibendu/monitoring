@@ -1,5 +1,3 @@
 # COMS
 
-
-
 ## Getting started
