@@ -164,7 +164,7 @@ public class ProcessService {
 	
 	public List<ProcessInstance> findByCodeAndStatus(ProcessSearchRequest request) {
 		System.out.println("JobService.findByCodeAndStatus()");
-		List<ProcessInstance> instances = repository.findByCodeAndStatus(request.getCode(), request.getStatus());
+		List<ProcessInstance> instances = repository.findByCodeAndStatus(request.getCode(), request.getVersion());
 		System.out.println("Result: "+instances.size());
 		return instances;
 	}

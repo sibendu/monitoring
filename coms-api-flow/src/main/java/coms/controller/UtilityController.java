@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ import coms.service.ProcessService;
 import coms.service.TaskService;
 import coms.task.TaskAction;
 import coms.util.ComsApiUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import coms.service.EventService;
 
 
@@ -45,11 +47,13 @@ public class UtilityController {
 	EventService eventService;
 	
 	@GetMapping("/live")
+	@Operation(summary="Utility method: liveness checking") 
 	public String index() {
-		return new Date() + "\n";
+		return "Time xx: " + new Date().toString();  
 	}
 	
-	@GetMapping("/cleanall")
+	@GetMapping("/clean")
+	@Operation(summary="Utility method: Clean all records (except process definitions) from database")
 	public String clean() {
 		processService.cleanAll();
 		taskService.cleanAll();
@@ -57,4 +61,10 @@ public class UtilityController {
 		return "All records removed successfully";
 	}
 
+	@GetMapping("/cleandef")
+	@Operation(summary="Utility method: Clean all process definitions")
+	public String cleanDef() {
+		processService.cleanAllProcessDef();
+		return "All process definitions removed successfully";
+	}
 }

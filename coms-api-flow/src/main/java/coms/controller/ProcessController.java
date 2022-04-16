@@ -24,6 +24,7 @@ import coms.handler.ComsEvent;
 import coms.message.MessageService;
 import coms.model.ProcessInstanceRepository;
 import coms.service.ProcessService;
+import io.swagger.v3.oas.annotations.Operation;
 
 
 @RestController
@@ -34,24 +35,28 @@ public class ProcessController {
 	ProcessService processService;
 	
 	@GetMapping("/def")
+	@Operation(summary="Get all process definition")
 	public Iterable<ProcessDefinition> getProcessDefs() {
 		System.out.println("ProcessController.getProcessDef()");
 		return processService.getProcessDefinitions();
 	}
 	
 	@GetMapping("/def/{id}")
+	@Operation(summary="Get a process definition by its id")
 	public ProcessDefinition getProcessDefById(@PathVariable Long id) {
 		System.out.println("ProcessController.getProcessDefById(id)");
 		return processService.getProcessDefinition(id);
 	}
 	
 	@GetMapping("/def/{processCode}/{version}")
+	@Operation(summary="Get a process definition by its code and version")
 	public ProcessDefinition getProcessDef(@PathVariable String processCode, @PathVariable String version) {
 		System.out.println("ProcessController.getProcessDef()");
 		return processService.find(processCode, version);
 	}
 	
 	@PostMapping("/def/{processCode}/{version}")
+	@Operation(summary="Create a new process definition")
 	public ProcessDefinition createProcessDef(@PathVariable String processCode, @PathVariable String version, @RequestBody String def) {
 		System.out.println("ProcessController.createPrcessDef()");
 		ProcessDefinition p = new ProcessDefinition(processCode, version, "", def, "DRAFT");	
@@ -59,6 +64,7 @@ public class ProcessController {
 	}
 	
 	@PutMapping("/def/{id}")
+	@Operation(summary="Update a process definition (identified by url param id)")
 	public ProcessDefinition updateProcessDef(@PathVariable Long id, @RequestBody String def) {
 		System.out.println("ProcessController.createPrcessDef()");
 		ProcessDefinition pdef = processService.getProcessDefinition(id);
@@ -66,32 +72,30 @@ public class ProcessController {
 		return processService.save(pdef);
 	}
 	
-	@DeleteMapping("/")
-	public String clean() {
-		processService.cleanAllProcessDef();
-		return "All process definitions removed successfully";
-	}
-	
 	
 	/*Process Instance related End points*/
 	
 	@GetMapping("/instance")
+	@Operation(summary="Get all process instances")
 	public Iterable<ProcessInstance> findJobs() {
 		return processService.getJobs();
 	}
 	
 	@PostMapping("/instance/search")
+	@Operation(summary="Search process instances (by code and version)")
 	public List<ProcessInstance> findByCodeAndStatus(@RequestBody ProcessSearchRequest request) {
 		System.out.println("ProcessController.findByCodeAndStatus()");
 		return processService.findByCodeAndStatus(request);
 	}
 	
 	@GetMapping("/instance/{id}")
+	@Operation(summary="Get a process instance by id")
 	public ProcessInstance findJob(@PathVariable Long id) {
 		return processService.getJob(id);
 	}
 	
 	@PostMapping("/instance/{processCode}/{version}/start")
+	@Operation(summary="Initiate a new process instance")
 	public String startProcess(@PathVariable String processCode,@PathVariable String version, @RequestBody ProcessContext context) {
 		//System.out.println("JobController.createNewEnv()");
 		ProcessInstance processInStance = processService.startProcess( processCode, version, context);		

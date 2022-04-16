@@ -18,9 +18,10 @@ repositories {
 	mavenCentral()
 }
 
-
-
 dependencies {
+	
+	//runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+	
 	implementation project(":coms-common")
 	implementation project(":coms-lib")
 	

@@ -28,6 +28,7 @@ import coms.service.ProcessService;
 import coms.service.TaskService;
 import coms.task.TaskAction;
 import coms.util.ComsApiUtil;
+import io.swagger.v3.oas.annotations.Operation;
 
 
 @RestController
@@ -38,22 +39,26 @@ public class TaskController {
 	TaskService taskService;
 	
 	@GetMapping("/")
+	@Operation(summary="Get all task instances")
 	public Iterable<TaskInstance> findJobs() {
 		return taskService.getTasks();
 	}
 	
 	@GetMapping("/{id}")
+	@Operation(summary="Get a task instance by id")
 	public TaskInstance findJob(@PathVariable long id) {
 		return taskService.getTask(id);
 	}
 	
 	@PostMapping("/search")
+	@Operation(summary="Search task instances")
 	public List<TaskInstance> search(@RequestBody String user) {
 		System.out.println("TaskController.findByCodeAndStatus()");
 		return taskService.findByAssignedUser(user);
 	}	
 	
 	@PostMapping("/start")
+	@Operation(summary="Create a new task instance")
 	public TaskInstance createTask(@RequestBody TaskInstance task) {
 		System.out.println("TaskController.createTask()");
 		String message = null;
@@ -69,6 +74,7 @@ public class TaskController {
 	}
 	
 	@PutMapping("/{id}/{action}")
+	@Operation(summary="Perform an action on a task instance")
 	public String action(@PathVariable long id, @PathVariable String action, @RequestBody TaskAction taskAction) {
 		System.out.println("TaskController.action(): action="+action);
 		String message = "";
