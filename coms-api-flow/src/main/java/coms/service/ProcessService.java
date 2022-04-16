@@ -48,8 +48,21 @@ public class ProcessService {
 	@Autowired
 	public ProcessActivityRepository recordRepository;
 	
+	public Iterable<ProcessDefinition> getProcessDefinitions() {
+		//System.out.println("JobService.getJobs()");
+		return processRepo.findAll();
+	}
+	
+	public ProcessDefinition getProcessDefinition(Long id) {
+		return processRepo.findById(id).get();
+	}
+	
 	public ProcessDefinition create(ProcessDefinition p) {
 		return processRepo.save(p);
+	}
+	
+	public ProcessDefinition save(ProcessDefinition def) {
+		return processRepo.save(def);
 	}
 	
 	public ProcessDefinition find(String code, String version) {
