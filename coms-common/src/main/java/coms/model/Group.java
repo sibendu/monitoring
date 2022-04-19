@@ -15,31 +15,39 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-@Table(name = "users")
-public class User {
+@Table(name = "groups")
+public class Group {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-	private String firstName;
-	private String middleName;
-	private String lastName;
-	//private String email;
 	
 	@Column(unique=true)
-	private String username;
+	private String name;
 	
-	private String password;
+	private String description;
+	
+	@ManyToMany(mappedBy = "groups", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+	@JsonIgnore
+    Set<User> users = new HashSet<>();
 	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-	@JoinTable(name = "user_group", joinColumns = @JoinColumn(name = "user_id"), 
-			  inverseJoinColumns = @JoinColumn(name = "group_id"))
-	private Set<Group> groups = new HashSet<>();
+	@JoinTable(name = "group_role", joinColumns = @JoinColumn(name = "group_id"), 
+			  inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private Set<Role> roles = new HashSet<>();
+	
+	public void addUser(User user) {
+		users.add(user);
+		user.getGroups().add(this);
+    }
+	
 }
 
 	
