@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import coms.model.ProcessInstance;
+import coms.model.repo.ProcessInstanceRepository;
 import coms.process.ComsProcessDef;
 import coms.process.ProcessContext;
 import coms.process.ProcessSearchRequest;
@@ -22,7 +23,6 @@ import coms.model.ProcessActivity;
 import coms.model.ProcessDefinition;
 import coms.handler.ComsEvent;
 import coms.message.MessageService;
-import coms.model.ProcessInstanceRepository;
 import coms.service.ProcessService;
 import io.swagger.v3.oas.annotations.Operation;
 

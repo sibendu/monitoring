@@ -1,6 +1,5 @@
 package coms.util;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class ComsApiUtil {
 		
 	public static void main(String[] args) {
 
-		ComsProcessDef demo = LOAN_PROCESS();
+		ComsProcessDef demo = DEMO_PROCESS();
 		
 		GsonBuilder builder = new GsonBuilder(); 
 		builder.setPrettyPrinting();
@@ -62,14 +61,15 @@ public class ComsApiUtil {
 		System.out.println(demo);
 	}
 	
+	
 	public static ComsProcessDef DEMO_PROCESS() {
 		ComsProcessDef demo = new ComsProcessDef("DEMO_PROCESS");
 		
-		EventDefinition event1 = new EventDefinition("START", new String[] {"CONFIG_ENV"});
-		event1.addHandler(new ServiceHandlerDef("Env Provision", "http://localhost:8080/sample/env/create",  null));
+		EventDefinition event1 = new EventDefinition("START");
+		event1.addHandler(new ServiceHandlerDef("Env Provision", "http://localhost:8080/sample/env/create",  new String[] {"CONFIG_ENV"}));
 		
-		EventDefinition event2 = new EventDefinition("CONFIG_ENV", new String[] {"NOTIFY_CUSTOMER"});
-		event2.addHandler(new ServiceHandlerDef("Env Config", "http://localhost:8080/sample/env/config",  null));
+		EventDefinition event2 = new EventDefinition("CONFIG_ENV");
+		event2.addHandler(new ServiceHandlerDef("Env Config", "http://localhost:8080/sample/env/config",  new String[] {"NOTIFY_CUSTOMER"}));
 
 		EventDefinition event3 = new EventDefinition("NOTIFY_CUSTOMER");
 		event3.addHandler(new ServiceHandlerDef("Notify Customer", "http://localhost:8080/sample/env/notify",  null));
@@ -83,6 +83,7 @@ public class ComsApiUtil {
 		return demo;
 	}
 	
+	/*
 	public static ComsProcessDef LOAN_PROCESS() {
 		ComsProcessDef demo = new ComsProcessDef("LOAN_PROCESS");
 		
@@ -104,7 +105,7 @@ public class ComsApiUtil {
 		event5.addHandler(new ServiceHandlerDef("Check Borrower Credit History", "http://localhost:8080/sample/loan",  null));
 		
 		EventDefinition event6 = new EventDefinition("ALL_CHECK_DONE", new String[] {"AUTOMATIC_DECISION"});
-		event6.addHandler(new DecisionHandlerDef("All Checks Complete",new String[]{"UNDERWRITE","EMPLOYMENT_CHECK","CREDIT_CHECK"}, ComsUtil.DECISION_AND));
+		event6.addHandler(new DecisionHandlerDef("All Checks Complete",new String[]{"UNDERWRITE","EMPLOYMENT_CHECK","CREDIT_CHECK"}, ComsUtil.DECISION_AND, new String[]{"AUTOMATIC_DECISION"}));
 		
 		EventDefinition event7 = new EventDefinition("AUTOMATIC_DECISION", new String[] {"REVIEW_RESULTS"});
 		event7.addHandler(new ServiceHandlerDef("Run Automatic Decision", "http://localhost:8080/sample/loan",  null));		
@@ -132,6 +133,7 @@ public class ComsApiUtil {
 	
 		return demo;
 	}
+	*/
 	
 	public static ComsProcessDef convert(ComsProcessDefProxy proxy) {
 		ComsProcessDef def = new ComsProcessDef(proxy.getCode());
@@ -142,18 +144,21 @@ public class ComsApiUtil {
 		EventDefinition eventDef = null;
 		for (EventDefinitionProxy p : proxies) {
 			
-			eventDef = new EventDefinition(p.getCode(), p.getNextEvents());
+			eventDef = new EventDefinition(p.getCode());
 			
 			List<EventHandlerDefProxy> handlers = p.getHandlers();
 			
 			AbstractEventHandlerDef handlerDef = null;
 			for (EventHandlerDefProxy h : handlers) {
-				if(h.getType().equals(HANDLER_TYPE_SERVICE)) {
+				
+				String thisType = h.getType();
+				
+				if(HANDLER_TYPE_SERVICE.equals(thisType)) {
 					handlerDef = new ServiceHandlerDef(h.getName(), h.getService(), h.getNextEvents());
-				}else if(h.getType().equals(HANDLER_TYPE_HUMATASK)) {
+				}else if(HANDLER_TYPE_HUMATASK.equals(thisType)) {
 					handlerDef = new TaskHandlerDef(h.getName(), h.getAssignedToGroup(), h.getAssignedToUser());
-				}else if(h.getType().equals(HANDLER_TYPE_DECISION)) {
-					handlerDef = new DecisionHandlerDef(h.getName(), h.getEvents(), h.getCondition());
+				}else if(HANDLER_TYPE_DECISION.equals(thisType)) {
+					handlerDef = new DecisionHandlerDef(h.getName(), h.getEvents(), h.getCondition(), h.getNextEvents());
 				}
 				eventDef.addHandler(handlerDef);
 			}

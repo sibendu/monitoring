@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import coms.model.Group;
-import coms.model.GroupRepository;
+import coms.model.Permission;
 import coms.model.Role;
-import coms.model.RoleRepository;
 import coms.model.User;
-import coms.model.UserRepository;
 import coms.model.dto.UserDto;
+import coms.model.repo.GroupRepository;
+import coms.model.repo.PermissionRepository;
+import coms.model.repo.RoleRepository;
+import coms.model.repo.UserRepository;
 
 @RestController
 public class UserController {
@@ -31,9 +33,17 @@ public class UserController {
 	@Autowired
 	public RoleRepository roleRepo;
 	
+	@Autowired
+	public PermissionRepository permissionRepo;
+	
 	@GetMapping("/user")
 	public List<User> getAllUsers (){
 		return userRepo.findAll();
+	}
+	
+	@GetMapping("/user/{id}")
+	public User getUser(@PathVariable Long id) {
+		return userRepo.findById(id).get();
 	}
 	
 	@GetMapping("/user/{username}")
@@ -54,6 +64,12 @@ public class UserController {
 	public List<Group> getAllGroups() {
 		return groupRepo.findAll();
 	}
+	
+	@GetMapping("/group/{id}")
+	public Group getGroup(@PathVariable Long id) {
+		return groupRepo.findById(id).get();
+	}
+	
 	@GetMapping("/group/{name}")
 	public Group getGroup(@PathVariable String name) {
 		List<Group> groups = groupRepo.findByName(name);
@@ -73,6 +89,11 @@ public class UserController {
 		return roleRepo.findAll();
 	}
 	
+	@GetMapping("/role/{id}")
+	public Role getRole(@PathVariable Long id) {
+		return roleRepo.findById(id).get();
+	}
+	
 	@GetMapping("/role/{name}")
 	public Role getRole(@PathVariable String name) {
 		List<Role> roles = roleRepo.findByName(name);
@@ -85,6 +106,31 @@ public class UserController {
 	@PostMapping("/role")
     public Role saveRole(@RequestBody Role role) {
 		return roleRepo.save(role);
+    }
+	
+	@GetMapping("/permission")
+	public List<Permission> getAllPermissions (){
+		return permissionRepo.findAll();
+	}
+	
+	
+	@GetMapping("/permission/{id}")
+	public Permission getPermission(@PathVariable Long id) {
+		return permissionRepo.findById(id).get();
+	}
+	
+	@GetMapping("/permission/{name}")
+	public Permission getPermission(@PathVariable String name) {
+		List<Permission> permissions = permissionRepo.findByName(name);
+		if(permissions != null && permissions.size() > 0) {
+			return permissions.get(0);
+		}
+		return null;
+	}
+	
+	@PostMapping("/permission")
+    public Permission savePermission(@RequestBody Permission permission) {
+		return permissionRepo.save(permission);
     }
 	
 	@PostMapping("/user/{username}/map/group")
@@ -110,8 +156,21 @@ public class UserController {
     }
 	
 	
+	@PostMapping("/role/{rolename}/map/permission")
+    public String mapPermissionsToRole(@PathVariable String rolename, @RequestBody String[] permissions) {
+		Role role = this.getRole(rolename);
+		for (int i = 0; i < permissions.length; i++) {
+			Permission perm = this.getPermission(permissions[i]);
+			perm.addRole(role);
+			roleRepo.save(role);
+		}
+		return "success";
+    }
+	
+	
 	@GetMapping("/clean")
 	public void cleanAll() {
+		permissionRepo.deleteAll();
 		roleRepo.deleteAll();
 		groupRepo.deleteAll();
 		userRepo.deleteAll();

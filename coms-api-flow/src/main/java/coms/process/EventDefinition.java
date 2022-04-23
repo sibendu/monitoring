@@ -17,19 +17,13 @@ public class EventDefinition implements Serializable{
 
 	private String code;
 	
-	private String[] nextEvents;
+	//private String[] nextEvents;
 	
 	private List<AbstractEventHandlerDef> handlers = new ArrayList<>();
 
 	public EventDefinition(String code) {
 		super();
 		this.code = code;
-	}
-	
-	public EventDefinition(String code, String[] nextEvents) {
-		super();
-		this.code = code;
-		this.nextEvents = nextEvents;
 	}
 	
 	public void addHandler(AbstractEventHandlerDef handler) {

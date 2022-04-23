@@ -36,7 +36,7 @@ public class TaskHandler extends AbstractEventHandler implements IEventHandler{
     		
     		TaskInstance task = new TaskInstance(humanTaskDef.getName(), null,humanTaskDef.getAssignedToGroup(),humanTaskDef.getAssignedToUser(), e.getProcessId(), processActivityId);
     		
-    		task.serializeSetNextEvents(eventDef.getNextEvents());
+    		//task.serializeSetNextEvents(eventDef.getNextEvents());
     		
     		//Add process context variables as task variables
     		List<ComsVariable> vars = e.getContext().getVariables();

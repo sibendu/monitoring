@@ -16,9 +16,9 @@ public class AbstractEventHandlerDef implements Serializable{
 	private String type;
 	private String[] nextEvents;
 	
-	public AbstractEventHandlerDef(String name, String type, String[] nextEvents) {
+	public AbstractEventHandlerDef(String name, String type, String[] ne) {
 		this.name =  name;
 		this.type = type;
-		this.nextEvents = nextEvents;
+		this.nextEvents = ne;
 	}
 }

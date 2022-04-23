@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 
 import coms.model.ProcessInstance;
+import coms.model.repo.ProcessActivityRepository;
+import coms.model.repo.ProcessInstanceRepository;
+import coms.model.repo.ProcessRepository;
 import coms.process.ComsProcessDef;
 import coms.process.ProcessContext;
 import coms.process.EventDefinition;
@@ -28,10 +31,7 @@ import coms.message.MessageService;
 import coms.handler.IEventHandler;
 import coms.handler.JavaHandlerDef;
 import coms.handler.ServiceHandlerDef;
-import coms.model.ProcessActivityRepository;
 import coms.model.ProcessDefinition;
-import coms.model.ProcessInstanceRepository;
-import coms.model.ProcessRepository;
 
 @Component
 public class ProcessService {

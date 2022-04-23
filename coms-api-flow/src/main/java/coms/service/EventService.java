@@ -11,13 +11,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
 import coms.model.ProcessInstance;
+import coms.model.repo.EventRepository;
+import coms.model.repo.ProcessActivityRepository;
+import coms.model.repo.ProcessInstanceRepository;
 import coms.process.ComsProcessDef;
 import coms.process.ProcessContext;
 import coms.process.EventDefinition;
 import coms.process.ProcessSearchRequest;
 import coms.util.ComsApiUtil;
 import coms.model.Event;
-import coms.model.EventRepository;
 import coms.model.ProcessActivity;
 import coms.handler.AbstractEventHandler;
 import coms.handler.AbstractEventHandlerDef;
@@ -27,8 +29,6 @@ import coms.handler.TaskHandlerDef;
 import coms.handler.IEventHandler;
 import coms.handler.JavaHandlerDef;
 import coms.handler.ServiceHandlerDef;
-import coms.model.ProcessActivityRepository;
-import coms.model.ProcessInstanceRepository;
 
 @Component
 public class EventService {

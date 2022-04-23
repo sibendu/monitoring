@@ -23,8 +23,8 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-@Table(name = "roles")
-public class Role {
+@Table(name = "permissions")
+public class Permission {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
@@ -34,18 +34,13 @@ public class Role {
 	
 	private String description;
 	
-	@ManyToMany(mappedBy = "roles", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+	@ManyToMany(mappedBy = "permissions", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
 	@JsonIgnore
-    Set<Group> groups = new HashSet<>();
+    Set<Role> roles = new HashSet<>();
 	
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-	@JoinTable(name = "role_permission", joinColumns = @JoinColumn(name = "role_id"), 
-			  inverseJoinColumns = @JoinColumn(name = "permission_id"))
-	private Set<Permission> permissions = new HashSet<>();
-	
-	public void addGroup(Group group) {
-		groups.add(group);
-		group.getRoles().add(this);
+	public void addRole(Role role) {
+		roles.add(role);
+		role.getPermissions().add(this);
     }
 }
 

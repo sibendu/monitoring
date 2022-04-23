@@ -1,4 +1,4 @@
-package coms.model;
+package coms.model.repo;
 
 import java.util.List;
 
@@ -7,8 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import coms.model.Group;
+
 @Repository
-public interface UserRepository extends JpaRepository<User, Long>{
-	
-	public List<User> findByUsername(String username);
+public interface GroupRepository extends JpaRepository<Group, Long>{
+	public List<Group> findByName(String name);
 }

@@ -121,104 +121,49 @@ public class MessageListener {
 
 					// Now start the actual activity
 					result = executeHandler(eventDef, thisHandlerDef, event, activity);
-
-					if (!result.isSuccess()) {
-						allHandlersSuccessful = false; // At least one handler for current event did not finish
-														// successfully
-					}
-
-					// Fire next set of events for this handler, if defined
-					// Only Service handlers will have next events. For Human tasks and Decision
-					// event, not applicable
-					if (thisHandlerDef.getType().equals(ComsApiUtil.HANDLER_TYPE_SERVICE)) {
-						String[] nextEventsHandler = thisHandlerDef.getNextEvents();
-						if (nextEventsHandler != null && nextEventsHandler.length > 0) {
-							for (int k = 0; k < nextEventsHandler.length; k++) {
-								fireEvent(nextEventsHandler[k], processId,
-										(result.getContext() == null ? null : result.getContext()));
+					
+					if (result.isSuccess()) {
+						
+						// Fire next set of events for this handler, if defined
+						// Only Service handlers and Decision handlers will have next events. Not applicable for Human tasks
+						// // For Human tasks, next events will be fired when task is completed
+						if (!thisHandlerDef.getType().equals(ComsApiUtil.HANDLER_TYPE_HUMATASK)) {
+							
+							String[] nextEventsHandler = thisHandlerDef.getNextEvents();
+							if (nextEventsHandler != null && nextEventsHandler.length > 0) {
+								for (int k = 0; k < nextEventsHandler.length; k++) {
+									fireEvent(nextEventsHandler[k], processId,
+											(result.getContext() == null ? null : result.getContext()));
+								}
 							}
-						}
-					}
-
-					// Mark activity completed. For Human Task not needed
-					if (!thisHandlerDef.getType().equals(ComsApiUtil.HANDLER_TYPE_HUMATASK)) {
-						markActivityCompletion(activity, (allHandlersSuccessful ? "Y" : "N"), result.getResult(),
-								(event.getContext() == null ? null : event.getContext().serializeToString()));
+							
+							// Mark activity completed. For Human Task not needed
+							markActivityCompletion(activity, (allHandlersSuccessful ? "Y" : "N"), result.getResult(),
+									(event.getContext() == null ? null : event.getContext().serializeToString()));
+						}						
+					}else {
+						allHandlersSuccessful = false;
+						// This case needs more thought. What to do in case handler resulted in erroneous processing
+						System.out.println(" *** Error in handler processing: " + event.getCode() + " , "+ result.getResult());
 					}
 				}
 
+				if (allHandlersSuccessful && !isTaskNode && processDef.isEndEvent(event.getCode())) {
+					// It is one of the end event. Check if process instance has reached completion
+					// Update count of end Events completed for this process instance
+					pi = jobService.updateEndEventCompletedCount(pi, processDef);
+				}
+				
 				// All handlers have successfully processed without error, fire events for next
 				// steps of process
 				if (allHandlersSuccessful) {
-
-					if (event.getCode().equals("REVIEW_RESULTS")) {
-						System.out.println("Here");
-					}
-
-					String[] nextEvents = processDef.getEventByCode(event.getCode()).getNextEvents();
-
-					if (!isTaskNode) {
-						// For Human tasks, next events need not be fired. They will be fired when task
-						// is completed
-
-						if (nextEvents != null && nextEvents.length > 0) {
-
-							// Generally nextEvents to be fired. But for Decision Node, nextEvents should be
-							// fired only ONCE
-							boolean fireNextEvents = true;
-
-							if (isDecisionNode) {
-								// Check if nextEvent for the Decision Node was/were already fired
-								for (int i = 0; i < nextEvents.length; i++) {
-									List<Event> evs = eventService.find(nextEvents[i], processId);
-									if (evs != null && evs.size() > 0) {
-										System.out.println("Process id " + processId + " event " + nextEvents[i]
-												+ " need not be fired again");
-										fireNextEvents = false;
-										break;
-									}else {
-										System.out.println("Next event "+nextEvents[i]+" not fired yet");
-									}
-								}
-							}
-
-							if (fireNextEvents) {
-								// Triggering all next events
-								for (int k = 0; k < nextEvents.length; k++) {
-									fireEvent(nextEvents[k], processId,event.getContext());
-								}
-
-								jpaEvent.setNextEvents(true);
-							} else {
-								jpaEvent.setNextEvents(false);
-							}
-						} else {
-							// current event does not have any next event defined
-							// check if it is one of the end event, and if yes, if process instance has
-							// reached completion
-							if (processDef.isEndEvent(event.getCode())) {
-								// It is (one of the) end events, update count of end Events completed for this
-								// process instance
-								pi = jobService.updateEndEventCompletedCount(pi, processDef);
-							}
-
-							jpaEvent.setNextEvents(false);
-						}
-					}
-
-					// Event is processed. Update database
 					jpaEvent.setStatus(ComsApiUtil.EVENT_STATUS_SUCCESS);
-
 				} else {
-					// This case needs more thought. What to do in case one (or more) handler
-					// resulted in erroneous result
-					// Event processed but at least some handler errored. Update database
+					// This case needs more thought. What to do in case one (or more) handler resulted in erroneous result
 					jpaEvent.setStatus(ComsApiUtil.EVENT_STATUS_FAIL);
-					jpaEvent.setNextEvents(false);
 					System.out.println("Error in processing event: " + event.getCode() + " , Process-Instance = "
 							+ event.getProcessId());
 				}
-
 				// Finally Update event record in DB
 				jpaEvent.setFinish(new Date());
 				eventService.save(jpaEvent);

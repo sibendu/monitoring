@@ -16,7 +16,6 @@ import coms.handler.ComsEvent;
 import coms.handler.JavaHandlerDef;
 import coms.message.MessageService;
 import coms.model.ProcessActivity;
-import coms.model.ProcessActivityRepository;
 import coms.model.ProcessDefinition;
 import coms.model.ProcessInstance;
 import coms.model.TaskActivity;
@@ -24,12 +23,13 @@ import coms.model.TaskInstance;
 import coms.process.ComsProcessDef;
 import coms.process.ProcessContext;
 import coms.process.ComsVariable;
+import coms.process.EventDefinition;
 import coms.process.ProcessSearchRequest;
 import coms.task.TaskAction;
 import coms.util.ComsApiUtil;
-
-import coms.model.TaskInstanceRepository;
 import coms.model.TaskVariable;
+import coms.model.repo.ProcessActivityRepository;
+import coms.model.repo.TaskInstanceRepository;
 
 @Component
 public class TaskService {
@@ -145,35 +145,39 @@ public class TaskService {
     			ProcessDefinition pDef = processService.find(pi.getCode(), pi.getVersion());		
         		ComsProcessDef processDef = new Gson().fromJson(pDef.getDefinition(), ComsProcessDef.class);  //ProcessDefinitionRepository.getProcessDefinition(processCode);
         		
+        		//Check if it was the end event for process
         		if(processDef.isEndEvent(act.getEvent())) {
+        			
         			//It is (one of the) end events, update count of end Events completed for this process instance 
         			pi = processService.updateEndEventCompletedCount(pi, processDef);
+        		
+        		}else { 
+        			
+        			//Task completed, trigger nextEvents
+        			
+        			EventDefinition eventDef = processDef.getEventByCode(act.getEvent());
+        			String[] nextEvents = eventDef.getHandlers().get(0).getNextEvents();
+        			
+        			Set<TaskVariable> vars = instance.getVariables();
+        			List<ComsVariable> comVars = new ArrayList<>();
+        			for (TaskVariable tv : vars) {
+    					comVars.add(new ComsVariable(tv.getName(), tv.getValue()));
+    				}
+        			
+            		// The process definition has next events are defined for this task. Trigger them all
+                	for (int i = 0; i < nextEvents.length; i++) {
+    					String nextEvent = nextEvents[i];    							
+    					ProcessContext processCtx = new ProcessContext();
+    					processCtx.setVariables(comVars);
+    					ComsEvent ev = new ComsEvent(null, nextEvent, new Date(), instance.getProcessId(), processCtx);
+    					
+    					messageService.sendMessage(ev);
+    				}
+                	
+                	System.out.println("Task "+instance.getName()+" complete; fired next events to resume process-id "+instance.getProcessId());  
         		}
 			}
-			
-			
-			//Task completed, check if there are any events to trigger
-			String[] nextEvents = instance.getDeserializeNextEvents();
-    		if(instance.getProcessId() != null && nextEvents != null && nextEvents.length > 0) {
-    			    			
-    			Set<TaskVariable> vars = instance.getVariables();
-    			List<ComsVariable> comVars = new ArrayList<>();
-    			for (TaskVariable tv : vars) {
-					comVars.add(new ComsVariable(tv.getName(), tv.getValue()));
-				}
-    			
-        		// The process definition has next events are defined for this task. Trigger them all
-            	for (int i = 0; i < nextEvents.length; i++) {
-					String nextEvent = nextEvents[i];    							
-					ProcessContext processCtx = new ProcessContext();
-					processCtx.setVariables(comVars);
-					ComsEvent ev = new ComsEvent(null, nextEvent, new Date(), instance.getProcessId(), processCtx);
-					
-					messageService.sendMessage(ev);
-				}
-            	
-            	System.out.println("Task "+instance.getName()+" complete; fired next events to resume process-id "+instance.getProcessId());    			
-    		}    		
+			   		
 		}		
 		return instance;
 	}

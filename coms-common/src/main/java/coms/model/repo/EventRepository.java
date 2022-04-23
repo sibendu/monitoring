@@ -1,4 +1,4 @@
-package coms.model;
+package coms.model.repo;
 
 import java.util.Date;
 import java.util.List;
@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+
+import coms.model.Event;
 
 public interface EventRepository extends CrudRepository<Event, Long> {
 	

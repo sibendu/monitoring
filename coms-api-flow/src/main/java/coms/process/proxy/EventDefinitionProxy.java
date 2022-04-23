@@ -16,7 +16,7 @@ public class EventDefinitionProxy implements Serializable{
 
 	private String code;
 	
-	private String[] nextEvents;
+	//private String[] nextEvents;
 	
 	private List<EventHandlerDefProxy> handlers = new ArrayList<>();
 

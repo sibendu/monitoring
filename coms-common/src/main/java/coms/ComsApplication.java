@@ -1,14 +1,14 @@
-package coms.model;
+package coms;
 
-import java.util.Date;
-import java.util.List;
-
-import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
+import coms.model.repo.EventRepository;
+import coms.model.repo.ProcessActivityRepository;
+import coms.model.repo.ProcessInstanceRepository;
 
 @SpringBootApplication
 public class ComsApplication {
@@ -43,7 +43,7 @@ public class ComsApplication {
 //				System.out.println("Process id "+ processId +" event "+code + " is fired sucessfully");	
 //			}
 			
-			System.out.println("Let's inspect the beans provided by Spring Boot:");
+			System.out.println("COMS Domains objects initialized");
 //			ProcessInstance job = new ProcessInstance(null,"A", "NEW",new Date(), null);	
 //			job = repo.save(job);
 //			System.out.println(job.getId());
@@ -73,8 +73,8 @@ public class ComsApplication {
 //			System.out.println(jobC.getId()+" - "+rec5.getId());
 			
 			
-			List<ProcessInstance> jobs = repo.findByCodeAndStatus("DEMO_PROCESS", "COMPLETED");
-			System.out.println(jobs.size());
+//			List<ProcessInstance> jobs = repo.findByCodeAndStatus("DEMO_PROCESS", "COMPLETED");
+//			System.out.println(jobs.size());
 		};
 	}
 

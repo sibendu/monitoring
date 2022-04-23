@@ -15,8 +15,8 @@ public class DecisionHandlerDef extends AbstractEventHandlerDef {
 	private String condition;
 	private String[] events;
 	
-	public DecisionHandlerDef(String name, String[] events, String condition) {
-		super(name, ComsApiUtil.HANDLER_TYPE_DECISION, null);
+	public DecisionHandlerDef(String name, String[] events, String condition, String[] ne) {
+		super(name, ComsApiUtil.HANDLER_TYPE_DECISION, ne);
 		this.events = events;
 		this.condition = condition;
 	}
