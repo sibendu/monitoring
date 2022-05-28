@@ -1,3 +1,3 @@
 # COMS
 
-## Getting started
+## Getting started - SD
