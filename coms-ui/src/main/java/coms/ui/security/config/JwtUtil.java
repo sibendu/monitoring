@@ -1,4 +1,4 @@
-package coms.block.ui.security;
+package coms.ui.security.config;
 
 import java.util.Arrays;
 import java.util.Collection;

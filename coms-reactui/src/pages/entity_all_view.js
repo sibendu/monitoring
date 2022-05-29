@@ -2,7 +2,7 @@ import React , { useState ,useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import Axios from 'axios'; 
 function EntityAllView(props) {
-    const [customer, setCustomer] = useState([]);  
+    const [entitylist, setEntitylist] = useState([]);  
     const [columnheaderData, setColumnheaderData] = useState([]);
     const [columnnameData, setColumnnameData] = useState([]);
     useEffect(() => { 
@@ -15,16 +15,16 @@ function EntityAllView(props) {
                 requestbody:''
             };
             Axios.post('/invoke', requestbody)
-                  .then(response => setCustomer(response.data));             
+                  .then(response => setEntitylist(response.data));             
 
-    }, []); 
+    }, [props.Formprops.entity_name]); 
     const handleViewClick = (id)=> {
         console.log('id clicked:'+ id);
-        props.handleViewClick("SingleCustomerView",id);
+        props.handleViewClick(props.Formprops.singleentityview,id);
       } 
       const handleEditClick = (id)=> {
         console.log('id clicked:'+ id);
-        props.handleEditClick("EditForm",id);
+        props.handleEditClick(props.Formprops.singleentityview.entityeditview,id);
       } 
       const handleEntityCreateClick = (page)=> {
         console.log('page1 clicked:'+ page);
@@ -32,11 +32,14 @@ function EntityAllView(props) {
       } 
     return (
         <React.Fragment>
-            <div class="row">
+              <div id="layoutDrawer_content">
+        
+        <main>
+            <div class="container-xl p-5">
+            <div class="row justify-content-between align-items-center mb-5">
                 <div class="col-sm">
                 <h3>{props.Formprops.form_title}</h3>
                 </div>
-                <div class="col-sm"></div>
                 <div class="col-sm"></div>
                 
                 <div class="col-sm">
@@ -55,7 +58,7 @@ function EntityAllView(props) {
                     </tr>
                 </thead>
                 <tbody>
-                        {customer.map(item => {  
+                        {entitylist.map(item => {  
                             return (
                                 <tr key={item[props.Formprops.column_id_column]}>
                                     {columnnameData.map(column => {  
@@ -70,6 +73,9 @@ function EntityAllView(props) {
                         })}  
                 </tbody>
             </table>
+            </div>
+            </main>
+            </div>
         </React.Fragment>
       );
 }

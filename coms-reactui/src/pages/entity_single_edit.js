@@ -1,7 +1,7 @@
 import React , { useState ,useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import Axios from 'axios'; 
-import Header from '../common/header';
+import Header from '../common/Header';
 const EntityEditForm = (props) => {
     const [formData, setFormData] = useState({});
     const [fieldData, setFieldData] = useState([]);
@@ -48,7 +48,10 @@ const EntityEditForm = (props) => {
       };
     return (
         <React.Fragment>
-            
+              <div id="layoutDrawer_content">
+        
+        <main>
+        <div class="container-xl p-5">
             <h3>{props.Formprops.form_title}</h3>
             <form class="form-horizontal" onSubmit={onSubmit}>
                 {formData && fieldData.map(field => {  
@@ -76,6 +79,9 @@ const EntityEditForm = (props) => {
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
             </form>
+            </div>
+            </main>
+            </div>
             </React.Fragment>
 
     );

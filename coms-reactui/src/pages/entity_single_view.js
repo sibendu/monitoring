@@ -22,8 +22,13 @@ function EntitySingleView(props) {
       } 
     if (!entity) return null;
     return (
+        <div id="layoutDrawer_content">
+        
+        <main>
+        <div class="container-xl p-5">
         <React.Fragment>
             <div class="row">
+                
                 <div class="col-sm">
                 <h3>{props.Formprops.form_title}</h3>
                 </div>
@@ -45,6 +50,9 @@ function EntitySingleView(props) {
                     </table>  
             </div>
         </React.Fragment>
+        </div>
+        </main>
+        </div>
     );
 }
 export default EntitySingleView;

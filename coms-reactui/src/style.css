@@ -44,7 +44,17 @@ a, a:hover, a:focus {
     border-bottom: 1px dashed #ddd;
     margin: 40px 0;
 }
-
+.bg-light, .footer-light {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
+}
+/*-----------------------
+Header style
+-------------*/
+.bg-dark {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity)) !important;
+  }
 /* ---------------------------------------------------
     SIDEBAR STYLE
 ----------------------------------------------------- */

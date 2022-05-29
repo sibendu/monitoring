@@ -1,6 +1,8 @@
-package coms.block.ui.controller;
+package coms.ui;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,24 +17,27 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import coms.block.ui.model.MediatorRequestBody;
-import coms.block.ui.service.HelperService;
-
-import coms.model.dto.UserDto;
+import coms.ui.model.MediatorRequestBody;
+import coms.ui.model.UserDto;
 
 
 @RestController
 public class ServletController {
+	
 	@Value("${coms.service.uri}")
 	private String serviceUri;
+	
 	@Value("${coms.userservice.uri}")
 	private String userserviceUri;
+	
 	@Autowired
 	HelperService helper;
+	
 	@RequestMapping("/hello")
 	public String index() {
 		return new Date() + "\n";
 	}
+	
 	@RequestMapping("/hellouser")
 	public String getUser()
 	{
@@ -43,15 +48,26 @@ public class ServletController {
 		}
 		return "You are not authorized";
 	}
+	
 	@RequestMapping(value = "/getuser", produces ="application/json") 
 	public UserDto GetUserDetails()
 	{
 		UserDto userdto = new UserDto();
+		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		System.out.println("authentication: "+authentication);
+		
 		if (!(authentication instanceof AnonymousAuthenticationToken)) {
 		    String currentUserName = authentication.getName();
-		    userdto = helper.GetUserByLoginid(currentUserName);
+		    System.out.println("currentUserName: "+currentUserName);
+		    
+		    userdto.setLogin_id(currentUserName);  //helper.GetUserByLoginid(currentUserName);
+		    userdto.setFirst_name("Sibendu");
 		    userdto.setUser_password("");
+		    
+		    List roles = new ArrayList<String>();
+		    roles.add("superadmin");
+		    userdto.setRoles(roles);
 		}
 		return userdto;
 	}

@@ -1,4 +1,4 @@
-package coms.block.ui.model;
+package coms.ui.model;
 
 public class AuthenticationRequest {
 	private String username;

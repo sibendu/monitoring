@@ -1,10 +1,10 @@
-package coms.block.ui.service;
+package coms.ui;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import coms.model.dto.UserDto;
+import coms.ui.model.UserDto;
 
 @Component
 public class HelperService {
