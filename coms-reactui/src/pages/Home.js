@@ -1,5 +1,7 @@
 import React from 'react';
 
+import Footer from "../common/Footer";
+
 function Home(props) {
 
     return ( 
@@ -13,7 +15,6 @@ function Home(props) {
                         <h1 className="display-4 mb-0">Dashboard</h1>
                         <div className="text-muted">Sales overview &amp; summary</div>
                     </div>
-                   
                 </div>
               
                 <div className="row gx-5">
@@ -232,18 +233,7 @@ function Home(props) {
             </div>
         </main>
 
-        <footer className="py-4 mt-auto border-top">
-            <div className="container-xl px-5">
-                <div className="d-flex flex-column flex-sm-row align-items-center justify-content-sm-between small">
-                    <div className="me-sm-2">Copyright © Your Website 2021</div>
-                    <div className="d-flex ms-sm-2">
-                        <a className="text-decoration-none" href="#!">Privacy Policy</a>
-                        <div className="mx-1">·</div>
-                        <a className="text-decoration-none" href="#!">Terms &amp; Conditions</a>
-                    </div>
-                </div>
-            </div>
-        </footer>
+        <Footer/>
     </div>
 
     );

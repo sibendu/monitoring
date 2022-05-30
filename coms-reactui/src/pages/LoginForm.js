@@ -19,6 +19,12 @@ const LoginForm = (props) => {
             "username":uemail.value,    
             "password": password.value
             };
+        
+        const token = 'ergr82743mwenwne8237823masas';
+        const user = {"id":11261, "userId": "admin@coms.com","firstName": "Sibendu", "lastName": "Das", "roles": ["SUPERADMIN"] };    
+        props.handleLoginsuccess(token, user);
+
+        /*    
         Axios.post('/authenticate', requestbody)
         .then(res=>{
             props.handleLoginsuccess(res.data.token, res.data.user);
@@ -32,6 +38,7 @@ const LoginForm = (props) => {
               console.log(error.response.headers);
             }
         });
+        */
 	
 	/* Sample call with Bearer token in header
 	let headers = { "Authorization": 'Bearer ' + token};

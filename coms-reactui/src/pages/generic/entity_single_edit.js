@@ -1,7 +1,7 @@
 import React , { useState ,useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import Axios from 'axios'; 
-import Header from '../common/Header';
+import Header from '../../common/Header';
 const EntityEditForm = (props) => {
     const [formData, setFormData] = useState({});
     const [fieldData, setFieldData] = useState([]);
