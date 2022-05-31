@@ -12,7 +12,9 @@ function LeftBar(props) {
         {'id':'Task','title':'Task', 'icon': 'fas fa-briefcase', 'roles':['ADMIN','PROCESS_OWNER','EMPLOYEE','SUPERADMIN'],
             'subItems': [ 
                 {'id':'NewTask', 'title': 'New Task'}  ,
-                {'id':'SearchTask', 'title': 'Search Task'}  
+                {'id':'SearchTask', 'title': 'Search Task'}  ,
+                {'id':'SampleTask', 'title': 'Sample Form'},  
+                {'id':'ListTask', 'title': 'Tasks List'}  
             ]},
         {'id':'Customer', 'title':'Customer','icon': 'fas fa-briefcase',
             'subItems': [

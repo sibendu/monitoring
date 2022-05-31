@@ -1,5 +1,5 @@
 import React , { useState  } from 'react';
-import { DataGrid, useGridApiRef, GridToolbar , GridRowModes} from '@mui/x-data-grid';
+import { DataGrid, useGridApiRef, GridToolbar , GridRowModes, GridSearchIcon} from '@mui/x-data-grid';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -33,38 +33,85 @@ import PageHeader from '../../common/PageHeader';
 
 const SearchTask = () => {
 
-  interface CityOptionType {
-    title: string;
-    code: string;
+  const [searchingInd, setSearchingInd] = React.useState(false);
+  const [searchedInd, setSearchedInd] = React.useState(false);
+  const [pageSize, setPageSize] = React.useState(10);
+  const [recordSelected, setRecordSelected] = useState({});
+
+  const [result, setResult] = React.useState({
+      "records":[
+        { id: 11, lastName: 'Snow', firstName: 'Jon', age: 35 },
+        { id: 12, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
+        { id: 13, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
+        { id: 14, lastName: 'Stark', firstName: 'Arya', age: 16 },
+        { id: 15, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
+        { id: 16, lastName: 'Melisandre', firstName: null, age: 150 },
+        { id: 17, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
+        { id: 18, lastName: 'Frances', firstName: 'Rossini', age: 36 },
+        { id: 19, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
+        { id: 20, lastName: 'John', firstName: 'Ferrara', age: 44 },
+        { id: 21, lastName: 'Franc', firstName: 'Rossini', age: 36 },
+        { id: 22, lastName: 'Rox', firstName: 'Harvey', age: 65 }
+      ]
+  });
+
+  const columns = [
+    { field: 'id', headerName: 'ID', width: 90 },
+    { field: 'firstName',headerName: 'First name',width: 150, editable: false,headerClassName: 'super-app-theme--header',headerAlign: 'center'},
+    { field: 'lastName', headerName: 'Last name', width: 150, editable: false, headerClassName: 'super-app-theme--header', headerAlign: 'center'},
+    { field: 'age', headerName: 'Age', type: 'number', width: 110, editable: false, headerClassName: 'super-app-theme--header', headerAlign: 'center'},
+    { field: 'fullName', headerName: 'Full name', description: 'This column has a value getter and is not sortable.', sortable: false, width: 160,
+      valueGetter: (params) =>
+        `${params.row.firstName || ''} ${params.row.lastName || ''}`,
+      headerClassName: 'super-app-theme--header',
+      headerAlign: 'center',  
+    },
+    { field: "actionEdit", headerName: "Edit", sortable: false, headerClassName: 'super-app-theme--header', headerAlign: 'center',
+      renderCell: (params) => {
+        const onClick = (e) => {
+          e.stopPropagation(); // don't select this row after clicking 
+          alert("Editing record: "+params.id);
+        };
+        return (
+          <button className="btn btn-lg btn-text-black btn-icon" type="button" onClick={onClick}><i className="material-icons">edit</i></button>
+        );
+      }
+    },
+    { field: "actionDelete", headerName: "Remove", sortable: false, headerClassName: 'super-app-theme--header', headerAlign: 'center',
+      renderCell: (params) => {
+        const onClick = (e) => {
+          e.stopPropagation(); // don't select this row after clicking  
+          alert("Deleting record: "+params.id);
+        };
+        return (
+          <button className="btn btn-lg btn-text-black btn-icon" type="button" onClick={onClick}><i className="material-icons">delete</i></button>
+        );
+      }
+    },
+  ];
+
+  function search(){
+    const searchResponse = {
+      totalMatch : 1000,
+      returnCount: 2,
+      "message": "1000 matching records found",
+      "records":[
+        { id: 11, lastName: 'Snow', firstName: 'Jon', age: 35 },
+        { id: 15, lastName: 'Targaryen', firstName: 'Daenerys', age: null }
+      ]
+    };
+
+    setSearchedInd(true);
+    setResult(searchResponse);
   }
 
-  interface CountryOptionType {
-    code: string;
-    name: string;
-    phone: string;
+  function addNewRecord(){
+    alert(result.records);
   }
 
-  const cities = [
-    { title: 'Kolkata', code: "KOL" },
-    { title: 'London', code: "LON" },
-    { title: 'California', code: "CAL" }
-  ]; 
-
-  const countries = [
-    { code: "IN" , "name": "India", "phone": "+91"},
-    { code: "USA" , "name": "United States of America", "phone": "+001"},
-    { code: "UK" , "name": "United Kingdom", "phone": "+44"},
-  ]; 
-
-  const defaultCityProps = {
-    options: cities,
-    getOptionLabel: (option: CityOptionType) => option.title,
-  }; 
-
-  const defaultCountryProps = {
-    options: countries,
-    getOptionLabel: (option: CountryOptionType) => option.name + ' '+ option.phone,
-  };
+  function deleteRecords(){
+    alert("Delete records");
+  }
 
   return (
 
@@ -74,131 +121,84 @@ const SearchTask = () => {
             
             <div className="container-xl p-5">
                 
-            <PageHeader heading="Search Task" subheading=""/>
-
-            <div className="card card-raised">
-
-            <Stack spacing={2} direction="row" alignContent={'center'}>
-              <Fab color="primary" aria-label="add">
-                <AddIcon />
-              </Fab>
-              <Fab color="secondary" aria-label="edit">
-                <EditIcon />
-              </Fab>
-              <Fab variant="extended">
-                <NavigationIcon sx={{ mr: 1 }} />
-                Navigate
-              </Fab>
-              <Fab disabled aria-label="like">
-                <FavoriteIcon />
-              </Fab>
-              <Badge badgeContent={4} color="primary">
-                <MailIcon color="action" />                                
-            </Badge>
-            </Stack>
+            <PageHeader heading="Search All Tasks" subheading=""/>
             
-            <Stack spacing={2} direction="row" alignContent={'center'}>
-                <Button variant="text" onClick={() => {alert('clicked');}}>Button Text</Button>
-                <Button variant="contained" size="small" endIcon={<SendIcon />} onClick={() => {alert('clicked');}}>Contained</Button>
-                <Button variant="outlined" startIcon={<DeleteIcon />} color="success" size="large" onClick={() => {alert('clicked');}}>Outlined</Button>
-            </Stack>
+            <div className="card card-raised">
 
             <React.Fragment>
                 
                 <Grid container>
 
-                  <Grid item xs={12} sm={12} padding={2}>      
-                    <Divider textAlign="center">
-                      <Chip label="Basic Details" />
-                    </Divider>
+                  <Grid item xs={12} sm={12} padding={2}>
+                    <div className="row align-items-right mb-1" style={{float: 'right'}}>
+                      <div className="col flex-shrink-0 mb-1 mb-md-0">
+                        <Button variant="contained" size="small" endIcon={<GridSearchIcon/>} onClick={() => setSearchingInd(!searchingInd)}>Search</Button>
+                        &nbsp;&nbsp;&nbsp;
+                        <Button variant="contained" size="small" endIcon={<AddIcon/>} onClick={() => addNewRecord()}>Add New</Button>
+                        &nbsp;&nbsp;&nbsp;
+                        <Button variant="contained" size="small" endIcon={<DeleteIcon/>} onClick={() => deleteRecords()}  disabled={recordSelected.length > 0 ? false: true}>Delete</Button>
+                      </div>
+                    </div>    
                   </Grid>
 
-                  <Grid item xs={12} sm={6} padding={2}>
-                    <TextField
-                      required
-                      id="firstName"
-                      name="firstName"
-                      label="First name"
-                      fullWidth
-                      autoComplete="given-name"
-                      variant="standard"
+                  {
+                    searchingInd?
+                      <>   
+                        <Grid item xs={12} sm={4} padding={2}>
+                          <TextField required id="firstName" name="firstName" label="First name" fullWidth autoComplete="first-name" variant="standard"/>
+                        </Grid>
+                        <Grid item xs={12} sm={4} padding={2}>
+                          <TextField required id="lastName" name="lastName" label="Last name" fullWidth autoComplete="given-name" variant="standard"/>
+                        </Grid>
+                        <Grid item xs={12} sm={4} padding={2}>
+                          <TextField required id="age" name="age" label="Age" fullWidth autoComplete="age" variant="standard"/>
+                        </Grid>
+                        <Grid item xs={12} sm={12} padding={2}>      
+                          <Button variant="contained" size="small" endIcon={<GridSearchIcon/>} onClick={() => search()}>Search</Button>
+                        </Grid>
+                      </>    
+                    :
+                      <></>
+                  }
+
+                  {
+                    searchedInd?                        
+                        <Grid item xs={12} sm={12} padding={2}>      
+                          <Divider textAlign="center">
+                            <Chip label={result.records.length > 0? result.message: "No matching records"} />
+                          </Divider>
+                        </Grid>
+                    :
+                        <></>
+                  }
+
+                  <Grid item xs={12} sm={12} padding={2}>
+                    <DataGrid id="taskList"
+                      rows={result.records}
+                      columns={columns}
+                      pageSize={pageSize}
+                      onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+                      rowsPerPageOptions={[5, 10, 20]}
+                      checkboxSelection
+                      disableSelectionOnClick
+                      autoHeight={true}
+                      autoWidth={true}
+                      rowHeight={25}
+                      components={{ Toolbar: GridToolbar }} 
+                      onSelectionModelChange={(ids) => setRecordSelected(ids)}
+                      density='comfortable'
+                      sx={{
+                        boxShadow: 3,
+                        border: 0,
+                        borderColor: 'primary.light',
+                        '& .MuiDataGrid-row:hover': {
+                          color: 'blue',
+                          background: '#E0E0E0'
+                        },
+                      }}
                     />
-                  </Grid>
-                  <Grid item xs={12} sm={6} padding={2}>
-                    <TextField
-                      required
-                      id="lastName"
-                      name="lastName"
-                      label="Last name"
-                      fullWidth
-                      autoComplete="family-name"
-                      variant="standard"
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6} padding={2}>
-                    <FormLabel id="lblGender">Gender</FormLabel>
-                    <RadioGroup row id="gender">
-                      <FormControlLabel value="female" control={<Radio />} label="Female" />
-                      <FormControlLabel value="male" control={<Radio />} label="Male" />
-                      <FormControlLabel value="disabled" disabled control={<Radio />} label="other"/>
-                    </RadioGroup>
-                  </Grid>
-                  <Grid item xs={12} sm={6} padding={2}>
-                    <FormLabel id="lblGender">Opt-In Preference</FormLabel><br/>
-                    <FormControlLabel 
-                      label="Opting-In"
-                      control={
-                        <Switch                          
-                          checked='true'
-                          onChange={()=> alert('Changed')}
-                          inputProps={{ 'aria-label': 'controlled' }}
-                        />
-                      }
-                    />                      
                   </Grid>
 
-                  <Grid item xs={12} sm={12} padding={2}>      
-                    <Divider textAlign="center">
-                      <Chip label="Address" />
-                    </Divider>
-                  </Grid>
-
-                  <Grid item xs={12} padding={2}>
-                    <TextField
-                      required
-                      id="address1"
-                      name="address1"
-                      label="Address line 1"
-                      fullWidth
-                      autoComplete="shipping address-line1"
-                      variant="standard"
-                    />
-                  </Grid>
-                  
-                  <Grid item xs={12} sm={6} padding={2}>
-                    <Autocomplete
-                      {...defaultCityProps}
-                      id="cities"
-                      renderInput={(params) => (
-                        <TextField {...params} label="City" variant="standard" />
-                      )}
-                    />            
-                  </Grid>
-                  <Grid item xs={12} sm={6} padding={2}>
-                    <Autocomplete
-                      {...defaultCountryProps}
-                      id="countries"
-                      renderInput={(params) => (
-                        <TextField {...params} label="Country" variant="standard" />
-                      )}
-                    />            
-                  </Grid>
-                  <Grid item xs={12} padding={2}>
-                    <FormControlLabel
-                      control={<Checkbox color="secondary" name="saveAddress" value="yes" />}
-                      label="Use this address for payment details"
-                    />
-                  </Grid>
                 </Grid>
               </React.Fragment>
 

@@ -31,7 +31,7 @@ import Footer from "../../common/Footer";
 
 import PageHeader from '../../common/PageHeader';
 
-const NewTask = () => {
+const SampleTask = () => {
 
   interface CityOptionType {
     title: string;
@@ -74,13 +74,44 @@ const NewTask = () => {
             
             <div className="container-xl p-5">
                 
-            <PageHeader heading="New Task" subheading="Create a new task"/>
+            <PageHeader heading="Sample Task Form" subheading=""/>
 
-            <div className="card card-raised">          
+            <div className="card card-raised">
+
+            <Stack spacing={2} direction="row" alignContent={'center'}>
+              <Fab color="primary" aria-label="add">
+                <AddIcon />
+              </Fab>
+              <Fab color="secondary" aria-label="edit">
+                <EditIcon />
+              </Fab>
+              <Fab variant="extended">
+                <NavigationIcon sx={{ mr: 1 }} />
+                Navigate
+              </Fab>
+              <Fab disabled aria-label="like">
+                <FavoriteIcon />
+              </Fab>
+              <Badge badgeContent={4} color="primary">
+                <MailIcon color="action" />                                
+              </Badge>
+            </Stack>
+            
+            <Stack spacing={2} direction="row" alignContent={'center'}>
+                <Button variant="text" onClick={() => {alert('clicked');}}>Button Text</Button>
+                <Button variant="contained" size="small" endIcon={<SendIcon />} onClick={() => {alert('clicked');}}>Contained</Button>
+                <Button variant="outlined" startIcon={<DeleteIcon />} color="success" size="large" onClick={() => {alert('clicked');}}>Outlined</Button>
+            </Stack>
 
             <React.Fragment>
                 
                 <Grid container>
+
+                  <Grid item xs={12} sm={12} padding={2}>      
+                    <Divider textAlign="center">
+                      <Chip label="Basic Details" />
+                    </Divider>
+                  </Grid>
 
                   <Grid item xs={12} sm={6} padding={2}>
                     <TextField
@@ -168,16 +199,6 @@ const NewTask = () => {
                       label="Use this address for payment details"
                     />
                   </Grid>
-
-                  <Grid item xs={12} sm={6} padding={2}>
-                      <div style={{float: 'right'}}>    
-                        <Button variant="contained" size="medium" endIcon={<AddIcon />} onClick={() => {alert('Form submitted');}}>Save</Button>
-                      </div>  
-                  </Grid> 
-                  <Grid item xs={12} sm={6} padding={2}>
-                        <Button variant="outlined" size="medium" endIcon={<DeleteIcon />} color="success" onClick={() => {alert('Form is cleared');}}>Clear</Button>
-                  </Grid>        
-
                 </Grid>
               </React.Fragment>
 
@@ -192,4 +213,4 @@ const NewTask = () => {
     );
   };
   
-export default NewTask;
+export default SampleTask;
