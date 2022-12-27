@@ -21,9 +21,18 @@ function LeftBar(props) {
                 {'id':'AddCustomer', 'title': 'Add Customer','roles':['ADMIN','PROCESS_OWNER']},
                 {'id':'SearchCustomer', 'title': 'Search Customer','roles':['ADMIN','PROCESS_OWNER','EMPLOYEE']}   
             ]},
+        {'id':'Process', 'title':'Process Definition','icon': 'fas fa-briefcase',
+            'subItems': [
+                {'id':'NewProcess', 'title': 'New','roles':['ADMIN']},
+                {'id':'SearchProcess', 'title': 'Search','roles':['ADMIN','PROCESS_OWNER']}   
+            ]}, 
+        {'id':'Sample', 'title':'Sample','icon': 'fas fa-briefcase',
+            'subItems': [
+                {'id':'NewSample', 'title': 'New Sample','roles':['ADMIN']},
+                {'id':'SearchSample', 'title': 'Search Sample','roles':['ADMIN','PROCESS_OWNER']}   
+            ]},                        
         {'id':'Preferences','title':'Preferences',  'icon': 'fas fa-circle','roles':['ADMIN','PROCESS_OWNER','EMPLOYEE']}, 
-        {'id':'Settings','title':'Account Settings',  'icon': 'fas fa-user','roles':['SUPERADMIN']},               
-        {'id':'Sample','title':'Sample Page', 'icon': 'fas fa-home', 'roles':['ADMIN','PROCESS_OWNER','EMPLOYEE']}        
+        {'id':'Settings','title':'Account Settings',  'icon': 'fas fa-user','roles':['SUPERADMIN']}               
     ];
 
     const menuItems = allMenuItems;
@@ -37,7 +46,7 @@ function LeftBar(props) {
     }); 
 
     const handleClick = (page)=> {
-        props.onClick(page);
+        props.onClick(page, null); //On Menu Click, Page Data Object (second argument) must be null
     } 
 
     return (

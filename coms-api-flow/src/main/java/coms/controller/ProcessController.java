@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +27,7 @@ import coms.message.MessageService;
 import coms.service.ProcessService;
 import io.swagger.v3.oas.annotations.Operation;
 
-
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/process")
 public class ProcessController {
@@ -55,6 +56,13 @@ public class ProcessController {
 		return processService.find(processCode, version);
 	}
 	
+	@PostMapping("/def/search")
+	@Operation(summary="Search process definition (by code and version)")
+	public List<ProcessDefinition> findByCode(@RequestBody ProcessSearchRequest request) {
+		System.out.println("ProcessController.findByCode()");
+		return processService.findDefByCodeAndStatus(request);
+	}
+	
 	@PostMapping("/def/{processCode}/{version}")
 	@Operation(summary="Create a new process definition object")
 	public ProcessDefinition createProcessDef(@PathVariable String processCode, @PathVariable String version, @RequestBody String def) {
@@ -65,10 +73,15 @@ public class ProcessController {
 	
 	@PutMapping("/def/{id}")
 	@Operation(summary="Update a process definition (identified by url param id)")
-	public ProcessDefinition updateProcessDef(@PathVariable Long id, @RequestBody String def) {
-		System.out.println("ProcessController.createPrcessDef()");
-		ProcessDefinition pdef = processService.getProcessDefinition(id);
-		pdef.setDefinition(def);		
+	public ProcessDefinition updateProcessDef(@PathVariable Long id, @RequestBody ProcessDefinition def) {
+		System.out.println("ProcessController.updateProcessDef()");
+		ProcessDefinition pdef = processService.getProcessDefinition(def.getId());
+		pdef.setCode(def.getCode());
+		pdef.setVersion(def.getVersion());
+		pdef.setStatus(def.getStatus());
+		pdef.setDescription(def.getDescription());
+		pdef.setDefinition(def.getDefinition());
+		
 		return processService.save(pdef);
 	}
 	

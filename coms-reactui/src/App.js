@@ -20,11 +20,16 @@ import SearchTask from './pages/task/SearchTask'
 import SampleTask from './pages/task/SampleTask';
 import ListTask from './pages/task/ListTask';
 
-import Sample from './pages/Sample';
+import NewProcess from './pages/process/NewProcess';
+import SearchProcess from './pages/process/SearchProcess'
+
+import NewSample from './pages/sample/NewSample';
+import SearchSample from './pages/sample/SearchSample'
 
 function App() {
     const [page, setPage] = useState("Home");
     const [user, setUser] = useState({});
+    const [pageDataObject, setPageDataObject] = useState({});
 
     const [token, setToken] = useState("");
     const [entityid, setEntityid] = useState(0);
@@ -33,9 +38,11 @@ function App() {
        console.log("App called");
     }, [page]);
 
-    const handlePageNavigationLinkClick = (page) => {
-      //console.log("page:"+ page);
+    const handlePageNavigationLinkClick = (page, pageDoB) => {
+      //console.log('Clicked = ' + page);
+      //console.log(pageDoB);
       setPage(page);	
+      setPageDataObject(pageDoB);
     }
     
     const logout = () => {
@@ -89,7 +96,13 @@ function App() {
 
               page==="Profile"?<Profile user={user}/>:
 
-              page==="Sample"?<Sample user={user}/>:
+              page==="NewProcess"?<NewProcess user={user} onClick={handlePageNavigationLinkClick} pageDataObject={pageDataObject}/>:
+
+              page==="SearchProcess"?<SearchProcess user={user} onClick={handlePageNavigationLinkClick} pageDataObject={pageDataObject}/>:
+
+              page==="NewSample"?<NewSample user={user} onClick={handlePageNavigationLinkClick} pageDataObject={pageDataObject}/>:
+
+              page==="SearchSample"?<SearchSample user={user} onClick={handlePageNavigationLinkClick} pageDataObject={pageDataObject}/>:              
 
               <Home user={user}/>
           }

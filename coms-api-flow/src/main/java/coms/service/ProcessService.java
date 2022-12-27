@@ -74,6 +74,13 @@ public class ProcessService {
 		return def;
 	}
 	
+	public List<ProcessDefinition> findDefByCodeAndStatus(ProcessSearchRequest request) {
+		System.out.println("JobService.findByCodeAndStatus()");
+		List<ProcessDefinition> defs = processRepo.findByCodeAndVersion(request.getCode(), request.getVersion());
+		System.out.println("Result: "+defs.size());
+		return defs;
+	}
+	
 	public Iterable<ProcessInstance> getJobs() {
 		//System.out.println("JobService.getJobs()");
 		return repository.findAll();
