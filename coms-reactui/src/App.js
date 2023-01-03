@@ -40,9 +40,9 @@ function App() {
 
     const handlePageNavigationLinkClick = (page, pageDoB) => {
       //console.log('Clicked = ' + page);
-      //console.log(pageDoB);
-      setPage(page);	
+      //console.log('pageDoB = ' +pageDoB);
       setPageDataObject(pageDoB);
+      setPage(page);	
     }
     
     const logout = () => {

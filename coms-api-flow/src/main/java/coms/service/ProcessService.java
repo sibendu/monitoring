@@ -57,6 +57,16 @@ public class ProcessService {
 		return processRepo.findById(id).get();
 	}
 	
+	public boolean delteProcessDefinition(Long id) {
+		processRepo.deleteById(id);
+		return true;
+	}
+	
+	public boolean delteProcessDefinitions(List<Long> ids) {
+		processRepo.deleteAllById(ids);
+		return true;
+	}
+	
 	public ProcessDefinition create(ProcessDefinition p) {
 		return processRepo.save(p);
 	}

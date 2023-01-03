@@ -16,9 +16,14 @@ import TextField from '@mui/material/TextField';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
 import Autocomplete from '@mui/material/Autocomplete';
 
-const NewProcess = (props) => {
+const NewTask = (props) => {
 
-  const [record, setRecord] = React.useState({});
+  const [id, setId] = React.useState("");
+  const [code, setCode] = React.useState("");
+  const [version, setVersion] = React.useState("");
+  const [status, setStatus] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [definition, setDefinition] = React.useState("");
 
   const [message, setMessage] = React.useState("");
 
@@ -27,6 +32,11 @@ const NewProcess = (props) => {
     { title: 'Published', code: "PUBLISHED" },
     { title: 'Deactivated', code: "DEACTIVATED" }
   ]; 
+
+  interface StatusOptionType {
+    title: string;
+    code: string;
+  }
 
   const defaultStatusProps = {
     options: statusCodes,
@@ -38,26 +48,36 @@ const NewProcess = (props) => {
     //console.log('New Process page');
     //console.log(props.pageDataObject);
     if(props.pageDataObject != null){
-      setRecord(props.pageDataObject);
+      setId(props.pageDataObject.id);
+      setCode(props.pageDataObject.code);
+      setVersion(props.pageDataObject.version);
+      setStatus(props.pageDataObject.status);
+      setDescription(props.pageDataObject.description);
+      setDefinition(props.pageDataObject.definition);
+      console.log('status='+props.pageDataObject.status);
     }else{
-      setRecord({id:'',code:'',version:'', description:'', definition:'', status:'DRAFT'});
+      setId("");
+      setCode("");
+      setVersion("");
+      setStatus("DRAFT");
+      setDescription("");
+      setDefinition("");
     }
   },[props.pageDataObject]);
 
   function handleSubmit(){
       //console.log('Submitted : '+ code+' , '+version);
       setMessage("");
-      if( record.id == ''){
-        
-        const url = 'http://localhost:8080/process/def/'+ record.code + '/' + record.version;
-        console.log('New record to be created: '+url);
-        axios.post( url , record.definition)
+      if( id == ''){
+        console.log('New record to be created');
+        const url = 'http://localhost:8080/process/def/'+ code + '/' + version;
+        axios.post( url , definition)
           .then(function (response) {
             //console.log(response.data.length);
             console.log(response);
-            if(response.status == 200){    
-              record.id = response.data.id;
+            if(response.status == 200){
               setMessage("Record created successfully"); 
+              setId(response.data.id);
             }else{
               setMessage("Service error, Please contact IT Admin. Error Message: "+response.statusText); 
             }    
@@ -68,15 +88,16 @@ const NewProcess = (props) => {
           });
 
       }else{
-          console.log('Record being updated: '+ record.id);
-          //const payload = {'id': id, 'code': code, 'version': version, 'description': description, 'definition': definition};
-          const url = 'http://localhost:8080/process/def/'+ record.id;
-          axios.put( url , record)
+          console.log('Record being updated: '+definition);
+          const payload = {'id': id, 'code': code, 'version': version, 'description': description, 'definition': definition};
+          const url = 'http://localhost:8080/process/def/'+ id;
+          axios.put( url , payload)
           .then(function (response) {
             //console.log(response.data.length);
             console.log(response);
             if(response.status == 200){
               setMessage("Record updated successfully"); 
+              setId(response.data.id);
             }else {
               setMessage("Service Error, Please contact IT Admin. Error Message: "+response.statusText); 
             }    
@@ -87,12 +108,6 @@ const NewProcess = (props) => {
           });
       }
   }
-
-  const handleChange = e =>{
-    //  console.log(e.target);
-    record[e.target.id] = e.target.value;
-    setRecord({ ...record });
-  };
 
   return (
 
@@ -119,16 +134,16 @@ const NewProcess = (props) => {
                   }
 
                   <Grid item xs={12} sm={12} padding={2}>
-                    <FormLabel id='lblId'>Id: {record.id}</FormLabel>  
+                    <FormLabel id='lblId'>Id: {id}</FormLabel>  
                   </Grid>  
                   <Grid item xs={12} sm={6} padding={2}>                    
                     <TextField required id="code" name="code" label="Code" fullWidth variant="standard"
-                      value = {record.code} onChange={handleChange}
+                      value = {code} onChange={(e) => setCode(e.target.value)}
                     />
                   </Grid>
                   <Grid item xs={12} sm={3} padding={2}>
                     <TextField required id="version" name="version" label="Version" fullWidth variant="standard"
-                      value = {record.version} onChange={handleChange}
+                      value = {version} onChange={(e) => setVersion(e.target.value)}
                     />                    
                   </Grid>
 
@@ -138,20 +153,20 @@ const NewProcess = (props) => {
                       renderInput={(params) => (
                         <TextField {...params} label="Status" variant="standard"/>
                       )}
-                      onChange={handleChange}
+                      onChange={(e) => setStatus(e.target.value)}
                     />            
                   </Grid>
 
                   <Grid item xs={12} sm={12} padding={2}>
                     <TextField required id="description" name="description" label="Description" fullWidth variant="standard"
-                      value = {record.description} 
-                      onChange={handleChange}
+                      value = {description} 
+                      onChange={(e) => setDescription(e.target.value)}
                     /> 
                   </Grid>
                   <Grid item xs={12} sm={12} padding={2}>
-                    <TextareaAutosize id="definition" name="definition" label="Definition" minRows={4} style={{ width: 600 }}
-                      value = {record.definition}
-                      onChange={handleChange}
+                    <TextareaAutosize id="description" name="description" label="Description" minRows={4} style={{ width: 600 }}
+                      value = {definition}
+                      onChange={(e) => setDefinition(e.target.value)}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6} padding={2}>
@@ -176,4 +191,4 @@ const NewProcess = (props) => {
     );
   };
   
-export default NewProcess;
+export default NewTask;

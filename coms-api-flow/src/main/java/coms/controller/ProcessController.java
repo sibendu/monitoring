@@ -34,60 +34,7 @@ public class ProcessController {
 	
 	@Autowired
 	ProcessService processService;
-	
-	@GetMapping("/def")
-	@Operation(summary="Get all process definition")
-	public Iterable<ProcessDefinition> getProcessDefs() {
-		System.out.println("ProcessController.getProcessDef()");
-		return processService.getProcessDefinitions();
-	}
-	
-	@GetMapping("/def/{id}")
-	@Operation(summary="Get a process definition by its id")
-	public ProcessDefinition getProcessDefById(@PathVariable Long id) {
-		System.out.println("ProcessController.getProcessDefById(id)");
-		return processService.getProcessDefinition(id);
-	}
-	
-	@GetMapping("/def/{processCode}/{version}")
-	@Operation(summary="Get a process definition by its code and version")
-	public ProcessDefinition getProcessDef(@PathVariable String processCode, @PathVariable String version) {
-		System.out.println("ProcessController.getProcessDef()");
-		return processService.find(processCode, version);
-	}
-	
-	@PostMapping("/def/search")
-	@Operation(summary="Search process definition (by code and version)")
-	public List<ProcessDefinition> findByCode(@RequestBody ProcessSearchRequest request) {
-		System.out.println("ProcessController.findByCode()");
-		return processService.findDefByCodeAndStatus(request);
-	}
-	
-	@PostMapping("/def/{processCode}/{version}")
-	@Operation(summary="Create a new process definition object")
-	public ProcessDefinition createProcessDef(@PathVariable String processCode, @PathVariable String version, @RequestBody String def) {
-		System.out.println("ProcessController.createPrcessDef()");
-		ProcessDefinition p = new ProcessDefinition(processCode, version, "", def, "DRAFT");	
-		return processService.create(p);
-	}
-	
-	@PutMapping("/def/{id}")
-	@Operation(summary="Update a process definition (identified by url param id)")
-	public ProcessDefinition updateProcessDef(@PathVariable Long id, @RequestBody ProcessDefinition def) {
-		System.out.println("ProcessController.updateProcessDef()");
-		ProcessDefinition pdef = processService.getProcessDefinition(def.getId());
-		pdef.setCode(def.getCode());
-		pdef.setVersion(def.getVersion());
-		pdef.setStatus(def.getStatus());
-		pdef.setDescription(def.getDescription());
-		pdef.setDefinition(def.getDefinition());
 		
-		return processService.save(pdef);
-	}
-	
-	
-	/*Process Instance related End points*/
-	
 	@GetMapping("/instance")
 	@Operation(summary="Get all process instances")
 	public Iterable<ProcessInstance> findJobs() {

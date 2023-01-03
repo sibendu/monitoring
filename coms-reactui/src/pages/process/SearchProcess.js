@@ -1,41 +1,21 @@
 import React , { useEffect, useState  } from 'react';
 
-import axios from "axios";
-
-import { DataGrid, useGridApiRef, GridToolbar , GridRowModes, GridSearchIcon} from '@mui/x-data-grid';
-
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-
-import Badge from '@mui/material/Badge';
-import MailIcon from '@mui/icons-material/Mail';
-
-import DeleteIcon from '@mui/icons-material/Delete';
-import SendIcon from '@mui/icons-material/Send';
-import Fab from '@mui/material/Fab';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import NavigationIcon from '@mui/icons-material/Navigation';
-import Switch from '@mui/material/Switch';
-import Divider from '@mui/material/Divider';
-import Chip from '@mui/material/Chip';
-
-import FormLabel from '@mui/material/FormLabel';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
-import Checkbox from '@mui/material/Checkbox';
-import Autocomplete from '@mui/material/Autocomplete';
-
 import Footer from "../../common/Footer";
-
 import PageHeader from '../../common/PageHeader';
 
-const SearchProcess = (props) => {
+import axios from "axios";
 
+import { DataGrid, GridToolbar , GridSearchIcon} from '@mui/x-data-grid';
+import Button from '@mui/material/Button';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import Divider from '@mui/material/Divider';
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+
+const SearchProcess = (props) => {
+  
   const [searchingInd, setSearchingInd] = React.useState(false);
   const [searchedInd, setSearchedInd] = React.useState(false);
   const [pageSize, setPageSize] = React.useState(10);
@@ -47,22 +27,56 @@ const SearchProcess = (props) => {
   const [records, setRecords] = React.useState([]);
   const [message, setMessage] = useState("");
 
-  const fetchData = async () => {
-    setMessage("");
-    //setSearchFields({code:'', version:''});
-    try {
-      const response = await fetch("http://localhost:8080/process/def")
-      const data = await response.json()
-      setRecords(data);
-      //console.log(data)
-    } catch (error) {
-      setMessage(error.message)
-    }
+  const errorMessage = "There is an error, please contact IT Admin. Error Message: ";
+  const successMessage = "Processed successfully";
+
+  function fetchData() {
+    //console.log('Fetching data');
+    const url = 'http://localhost:8080/process/def/';    
+    axios.get(url).
+      then(response => {
+        //console.log(response.data);
+        if(response.status == 200){
+          setRecords(response.data);        
+        }else{
+          setMessage(errorMessage + response.statusText); 
+        } 
+      }).catch(error => {
+        console.log('Error');
+        setMessage(errorMessage + error.message);
+      });      
   }
 
   useEffect(() => {
     fetchData()
   },[])
+
+
+  function handleDelete(record){
+    var payload = [];
+    if( record != null){
+      payload.push(record.id);
+    }else{
+      payload = recordSelected;
+    } 
+    
+    const url = 'http://localhost:8080/process/def/';
+      
+    axios.post(url , payload)
+      .then(function (response) {
+        if(response.status == 200){
+          setMessage(successMessage); 
+          fetchData();
+        }else{
+          setMessage(errorMessage + response.statusText); 
+        }   
+      })
+      .catch(error => {
+        console.log(error);
+        setMessage(errorMessage + error.message); 
+      });
+  
+  }
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 30 },
@@ -74,9 +88,6 @@ const SearchProcess = (props) => {
       renderCell: (params) => {
         const onClick = (e) => {
           e.stopPropagation(); // don't select this row after clicking 
-          //console.log("Editing record: "+params.row);
-          //const pageDoB = [];
-          //pageDoB.push(params.row);
           props.onClick("NewProcess", params.row);
         };
         return (
@@ -88,7 +99,7 @@ const SearchProcess = (props) => {
       renderCell: (params) => {
         const onClick = (e) => {
           e.stopPropagation(); // don't select this row after clicking  
-          alert("Deleting record: "+params.id);
+          handleDelete(params.row);
         };
         return (
           <button className="btn btn-lg btn-text-black btn-icon" type="button" onClick={onClick}><i className="material-icons">delete</i></button>
@@ -99,29 +110,21 @@ const SearchProcess = (props) => {
 
   function search(){
     //console.log('Searching : '+ searchCode+' , '+searchVersion);
-    setMessage("")
-      axios.post('http://localhost:8080/process/def/search', {
-        code: searchCode,
-        version: searchVersion
-      })
-      .then(function (response) {
-        //console.log(response.data.length);
-        setRecords(response.data);
-        setMessage("Matching records: "+response.data.length);
-      })
-      .catch(function (error) {
-        console.log(error);
-        setMessage(error.message)
-      });
-      setSearchedInd(true);  
-  }
-
-  function addNewRecord(){
-    alert(records);
-  }
-
-  function deleteRecords(){
-    alert("Delete records");
+    setMessage("");
+    axios.post('http://localhost:8080/process/def/search', {
+      code: searchCode,
+      version: searchVersion
+    })
+    .then(function (response) {
+      //console.log(response.data.length);
+      setRecords(response.data);
+      setMessage("Matching records: "+response.data.length);
+    })
+    .catch(function (error) {
+      console.log(error);
+      setMessage(error.message);
+    });
+    setSearchedInd(true);  
   }
 
   return (
@@ -142,9 +145,9 @@ const SearchProcess = (props) => {
                       <div className="col flex-shrink-0 mb-1 mb-md-0">
                         <Button variant="contained" size="small" endIcon={<GridSearchIcon/>} onClick={() => setSearchingInd(!searchingInd)}>Search</Button>
                         &nbsp;&nbsp;&nbsp;
-                        <Button variant="contained" size="small" endIcon={<AddIcon/>} onClick={() => addNewRecord()}>Add New</Button>
+                        <Button variant="contained" size="small" endIcon={<AddIcon/>} onClick={() => props.onClick("NewProcess", null)}>Add New</Button>
                         &nbsp;&nbsp;&nbsp;
-                        <Button variant="contained" size="small" endIcon={<DeleteIcon/>} onClick={() => deleteRecords()}  disabled={recordSelected.length > 0 ? false: true}>Delete</Button>
+                        <Button variant="contained" size="small" endIcon={<DeleteIcon/>} onClick={() => handleDelete()}  disabled={recordSelected.length > 0 ? false: true}>Delete</Button>
                       </div>
                     </div>    
                   </Grid>
@@ -165,6 +168,17 @@ const SearchProcess = (props) => {
                     :
                       <></>
                   }
+
+                  {
+                    message != ''?                        
+                        <Grid item xs={12} sm={12} padding={2}>      
+                          <Divider textAlign="center">
+                            <Chip label={message} />
+                          </Divider>
+                        </Grid>
+                    :
+                        <></>
+                  }  
 
                   {
                     searchedInd?                        
