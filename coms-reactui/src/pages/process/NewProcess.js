@@ -14,34 +14,34 @@ import FormLabel from '@mui/material/FormLabel';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
-import Autocomplete from '@mui/material/Autocomplete';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
 
 const NewProcess = (props) => {
 
-  const [record, setRecord] = React.useState({});
+  const newRecord = {id:'',code:'',version:'', description:'', definition:'', status:'D'};
+  const [record, setRecord] = React.useState(newRecord);
 
   const [message, setMessage] = React.useState("");
 
   const statusCodes = [
-    { title: "DRAFT", code: "DRAFT" },
-    { title: 'Published', code: "PUBLISHED" },
-    { title: 'Deactivated', code: "DEACTIVATED" }
+    { title: "Draft", code: "D" },
+    { title: 'Published', code: "P" },
+    { title: "On Hold", code: "H" },
+    { title: 'Retired', code: "R" }
   ]; 
 
-  const defaultStatusProps = {
-    options: statusCodes,
-    getOptionLabel: (option) => option.title,
-    isOptionEqualToValue: (option, value) => (option.code == value.code),
-  };
-
   useEffect(() => {
+    //console.log('API: '+process.env.REACT_APP_WORKFLOW_API);
     //console.log('New Process page');
     //console.log(props.pageDataObject);
     if(props.pageDataObject != null){
+      //console.log('here');
       setRecord(props.pageDataObject);
-    }else{
-      setRecord({id:'',code:'',version:'', description:'', definition:'', status:'DRAFT'});
     }
+    //console.log(record);
   },[props.pageDataObject]);
 
   function handleSubmit(){
@@ -49,12 +49,13 @@ const NewProcess = (props) => {
       setMessage("");
       if( record.id == ''){
         
-        const url = 'http://localhost:8080/process/def/'+ record.code + '/' + record.version;
-        console.log('New record to be created: '+url);
-        axios.post( url , record.definition)
+        const url = process.env.REACT_APP_WORKFLOW_API + '/process/def/new'; //+ record.code + '/' + record.version;
+        //console.log('New record to be created: '+url);
+        //console.log(record);
+        axios.post( url , record)
           .then(function (response) {
             //console.log(response.data.length);
-            console.log(response);
+            //console.log(response);
             if(response.status == 200){    
               record.id = response.data.id;
               setMessage("Record created successfully"); 
@@ -63,18 +64,19 @@ const NewProcess = (props) => {
             }    
           })
           .catch(function (error) {
-            console.log(error);
+            //console.log(error);
             setMessage("Service unavailable, Please contact IT Admin. Error Message: "+error.message); 
           });
 
       }else{
-          console.log('Record being updated: '+ record.id);
+          //console.log('Record being updated: '+ record.id);
+          //console.log(record);
           //const payload = {'id': id, 'code': code, 'version': version, 'description': description, 'definition': definition};
-          const url = 'http://localhost:8080/process/def/'+ record.id;
+          const url = process.env.REACT_APP_WORKFLOW_API +  '/process/def/'+ record.id;          
           axios.put( url , record)
           .then(function (response) {
             //console.log(response.data.length);
-            console.log(response);
+            //console.log(response);
             if(response.status == 200){
               setMessage("Record updated successfully"); 
             }else {
@@ -82,15 +84,15 @@ const NewProcess = (props) => {
             }    
           })
           .catch(function (error) {
-            console.log(error);
+            //console.log(error);
             setMessage("Service unavailable, Please contact IT Admin. Error Message: "+error.message); 
           });
       }
   }
 
   const handleChange = e =>{
-    //  console.log(e.target);
-    record[e.target.id] = e.target.value;
+    //console.log(e.target);
+    record[e.target.name] = e.target.value;
     setRecord({ ...record });
   };
 
@@ -132,14 +134,25 @@ const NewProcess = (props) => {
                     />                    
                   </Grid>
 
+
                   <Grid item xs={12} sm={3} padding={2}>  
-                    <Autocomplete
-                      {...defaultStatusProps}
-                      renderInput={(params) => (
-                        <TextField {...params} label="Status" variant="standard"/>
-                      )}
-                      onChange={handleChange}
-                    />            
+                    <FormControl fullWidth>
+                      <InputLabel id="demo-simple-select-label">Status</InputLabel>
+                      <Select
+                        id="status"
+                        name="status"
+                        label="Status"
+                        value={record.status}
+                        onChange={handleChange}
+                        readOnly={record.id == ''?true: false}
+                      >
+                        {statusCodes?.map(option => {
+                            return (
+                              <MenuItem value={option.code}>{option.title}</MenuItem>
+                            );
+                        })}
+                      </Select> 
+                    </FormControl>             
                   </Grid>
 
                   <Grid item xs={12} sm={12} padding={2}>

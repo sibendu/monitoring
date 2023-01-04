@@ -64,12 +64,11 @@ public class ProcessDefinitionController {
 		return processService.findDefByCodeAndStatus(request);
 	}
 	
-	@PostMapping("/def/{processCode}/{version}")
+	@PostMapping("/def/new")
 	@Operation(summary="Create a new process definition object")
-	public ProcessDefinition createProcessDef(@PathVariable String processCode, @PathVariable String version, @RequestBody String def) {
+	public ProcessDefinition createProcessDef(@RequestBody ProcessDefinition def) {
 		System.out.println("ProcessController.createPrcessDef()");
-		ProcessDefinition p = new ProcessDefinition(processCode, version, "", def, "DRAFT");	
-		return processService.create(p);
+		return processService.create(def);
 	}
 	
 	@PutMapping("/def/{id}")
