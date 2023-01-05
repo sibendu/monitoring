@@ -1,0 +1,10 @@
+FROM alpine
+COPY ddl.sql .
+RUN apk add --no-cache postgresql-client
+RUN psql --version
+ENV PGPASSWORD=$DB_PASSWORD
+RUN echo $PGPASSWORD
+RUN echo $DB_HOST
+ENTRYPOINT [ "sh", "-c", "psql -h $DB_HOST -d $DB_NAME -U $DB_USER -p $DB_PORT -a -q -f ddl.sql" ]
+#ENTRYPOINT ["psql","-h",$DB_HOST,"-d",$DB_NAME,"-U",$DB_USER,"-p",$DB_PORT,"-a","-q","-f","ddl.sql"]
+

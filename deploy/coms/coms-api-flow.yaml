@@ -21,8 +21,21 @@ spec:
             - name: spring.profiles.active
               value: dev
           imagePullPolicy: Always
-      imagePullSecrets:
-          - name: gitlabregcred
+
+      initContainers:
+      - name: init-coms-api-flow
+        image: sibendu/initflow
+        env:
+          - name: DB_HOST
+            value: postgres
+          - name: DB_PORT
+            value: "5432"
+          - name: DB_USER
+            value: admin
+          - name: PGPASSWORD
+            value: admin123
+          - name: DB_NAME
+            value: postgres
 ---
 apiVersion: v1
 kind: Service
@@ -35,4 +48,4 @@ spec:
   ports:
     - port: 8080
       targetPort: 8080
-      nodePort: 31080     
+      nodePort: 30080     
